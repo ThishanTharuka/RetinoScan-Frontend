@@ -8,6 +8,7 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],
   imports: [NavbarComponent, FooterComponent, LottieComponent],
+  standalone: true,
 })
 export class LandingComponent {
   options: AnimationOptions = {
