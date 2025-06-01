@@ -1,0 +1,154 @@
+.landing-page {
+  text-align: center;
+
+  h1 {
+    font-size: 2.5rem;
+    color: #333;
+  }
+
+  p {
+    font-size: 1.2rem;
+    color: #666;
+  }
+
+  button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  .nav {
+    display: flex;
+    gap: 1rem;
+
+    a {
+      text-decoration: none;
+      color: #007bff;
+      font-weight: 500;
+
+      &.btn {
+        background-color: #007bff;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        text-decoration: none;
+      }
+
+      &.btn-outline {
+        border: 1px solid #007bff;
+        color: #007bff;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+  background-color: #e9ecef;
+
+  .hero-image {
+    max-width: 50%;
+    border-radius: 0.5rem;
+  }
+
+  .hero-content {
+    max-width: 40%;
+
+    h1 {
+      font-size: 2.5rem;
+      color: #333;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #666;
+      margin: 1rem 0;
+    }
+
+    .btn {
+      background-color: #007bff;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      text-decoration: none;
+    }
+  }
+}
+
+.challenge,
+.how-it-works,
+.benefits,
+.about {
+  padding: 2rem;
+  text-align: center;
+
+  h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+
+  p,
+  li {
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin: 0.5rem 0;
+    }
+  }
+}
+
+.footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
+
+  a {
+    text-decoration: none;
+    color: #007bff;
+    margin: 0 0.5rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+  }
+}

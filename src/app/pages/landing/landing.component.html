@@ -1,0 +1,59 @@
+<div class="landing-page">
+  <app-navbar></app-navbar>
+
+  <section class="hero">
+    <ng-lottie [options]="options" class="hero-image"></ng-lottie>
+    <div class="hero-content">
+      <h1>AI-Powered Early Detection of Diabetic Retinopathy</h1>
+      <p>
+        Accessible, accurate, and affordable retinal screening for everyone.
+      </p>
+      <button routerLink="/login" class="btn">Get Started</button>
+    </div>
+  </section>
+
+  <section class="challenge">
+    <h2>The Challenge</h2>
+    <p>
+      Diabetic Retinopathy is a leading cause of blindness in Sri Lanka. Limited
+      access to specialists and costly screening tools mean many cases go
+      undiagnosed until it’s too late. Early detection can prevent up to 95% of
+      vision loss.
+    </p>
+  </section>
+
+  <section class="how-it-works">
+    <h2>How It Works</h2>
+    <ul>
+      <li>Upload a retina image</li>
+      <li>AI analyzes and highlights affected areas</li>
+      <li>Instantly receive results and severity</li>
+    </ul>
+  </section>
+
+  <section class="benefits">
+    <h2>Benefits</h2>
+    <ul>
+      <li>Fast, accurate, and easy to use</li>
+      <li>Clinically validated AI</li>
+      <li>Secure and private</li>
+      <li>Designed for low-resource settings</li>
+    </ul>
+  </section>
+
+  <section class="about">
+    <h2>About the Project</h2>
+    <p>
+      RetinoScan is a research-backed initiative focused on making early
+      detection of diabetic retinopathy accessible in Sri Lanka and similar
+      regions. We are committed to ethical AI practices, ensuring privacy,
+      fairness, and transparency in our technology.
+    </p>
+    <div class="buttons">
+      <button routerLink="/contact" class="btn">Contact Us</button>
+      <button routerLink="/research" class="btn-outline">Research Team</button>
+    </div>
+  </section>
+
+  <app-footer></app-footer>
+</div>
