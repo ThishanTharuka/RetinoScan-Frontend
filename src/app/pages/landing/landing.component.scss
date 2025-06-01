@@ -1,37 +1,10 @@
-.landing-page {
-  text-align: center;
-
-  h1 {
-    font-size: 2.5rem;
-    color: #333;
-  }
-
-  p {
-    font-size: 1.2rem;
-    color: #666;
-  }
-
-  button {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #0056b3;
-    }
-  }
-}
+@import '../../../styles/variables'; // Import variables
 
 .hero {
+  text-align: center;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2rem;
   background-color: white;
 
   .hero-image {
@@ -39,26 +12,36 @@
     border-radius: 0.5rem;
   }
 
-  .hero-content {
-    max-width: 40%;
+  h1 {
+    font-size: $font-size-xxxl;
+    color: black;
+    font-weight: bold;
+    font-family: $font-family-primary;
+    text-align: start;
+  }
 
-    h1 {
-      font-size: 2.5rem;
-      color: #333;
-    }
+  p {
+    font-size: $font-size-base;
+    color: #0D171C;
+    font-family: $font-family-primary;
+    text-align: start;
+  }
 
-    p {
-      font-size: 1.2rem;
-      color: #666;
-      margin: 1rem 0;
-    }
+  button {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: $color-btn-primary;
+    font-family: $font-family-primary;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
 
-    .btn {
-      background-color: #007bff;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border-radius: 0.25rem;
-      text-decoration: none;
+    &:hover {
+      background-color: #0056b3;
     }
   }
 }
