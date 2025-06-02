@@ -42,6 +42,11 @@
         padding: 0.5rem 1rem;
         border-radius: 12px;
         text-decoration: none;
+
+        &:hover {
+          background-color: darken($color-btn-primary, 10%);
+          cursor: pointer;
+        }
       }
 
       &.btn-outline {
@@ -53,6 +58,11 @@
         padding: 0.5rem 1rem;
         border-radius: 12px;
         text-decoration: none;
+
+        &:hover {
+          background-color: darken($color-btn-secondary, 10%);
+          cursor: pointer;
+        }
       }
     }
   }

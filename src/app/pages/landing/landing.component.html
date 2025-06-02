@@ -24,21 +24,32 @@
 
     <section class="how-it-works">
       <h2>How It Works</h2>
-      <ul>
-        <li>Upload a retina image</li>
-        <li>AI analyzes and highlights affected areas</li>
-        <li>Instantly receive results and severity</li>
-      </ul>
+      <div class="steps">
+        <div class="step">
+          <mat-icon>drive_folder_upload</mat-icon>
+          <span>Upload a retina image</span>
+        </div>
+        <div class="divider"></div>
+        <div class="step">
+          <mat-icon>smart_toy</mat-icon>
+          <span>AI analyzes and highlights affected areas</span>
+        </div>
+        <div class="divider"></div>
+        <div class="step">
+          <mat-icon>emoji_events</mat-icon>
+          <span>Instantly receive results and severity</span>
+        </div>
+      </div>
     </section>
 
     <section class="benefits">
       <h2>Benefits</h2>
-      <ul>
-        <li>Fast, accurate, and easy to use</li>
-        <li>Clinically validated AI</li>
-        <li>Secure and private</li>
-        <li>Designed for low-resource settings</li>
-      </ul>
+      <div class="benefit-cards-container">
+        <app-benefit-card
+          *ngFor="let benefitText of benefits"
+          [text]="benefitText"
+        ></app-benefit-card>
+      </div>
     </section>
 
     <section class="about">
@@ -49,13 +60,13 @@
         regions. We are committed to ethical AI practices, ensuring privacy,
         fairness, and transparency in our technology.
       </p>
-      <div class="buttons">
-        <button routerLink="/contact" class="btn">Contact Us</button>
-        <button routerLink="/research" class="btn-outline">
-          Research Team
-        </button>
-      </div>
     </section>
+  </div>
+  <div class="buttons">
+    <button routerLink="/contact" class="btn">Contact Us</button>
+    <button routerLink="/research" class="btn-outline">
+      Research Team
+    </button>
   </div>
 
   <app-footer></app-footer>
