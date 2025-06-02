@@ -1,0 +1,190 @@
+@import '../../../styles/variables';
+
+.hero {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+
+  .hero-image {
+    max-width: 50%;
+    border-radius: 0.5rem;
+  }
+
+  h1 {
+    font-size: $font-size-xxxl;
+    color: black;
+    font-weight: bold;
+    font-family: $font-family-primary;
+    text-align: start;
+  }
+
+  p {
+    font-size: $font-size-base;
+    color: #0D171C;
+    font-family: $font-family-primary;
+    text-align: start;
+  }
+
+  button {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: $color-btn-primary;
+    font-family: $font-family-primary;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}
+
+.challenge,
+.about {
+  text-align: start;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: $font-size-xl;
+    font-weight: bold;
+    color: $color-text-primary;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    margin-bottom: 1rem;
+  }
+}
+
+
+.how-it-works {
+  text-align: start;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: $font-size-xl;
+    font-weight: bold;
+    color: $color-text-primary;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0.5rem;
+
+    .step {
+      display: flex;
+      flex-direction: row;
+
+      span {
+        padding-left: 0.5rem;
+        font-size: $font-size-base;
+        color: $color-text-primary;
+      }
+    }
+
+    .divider {
+      height: 2rem;
+      width: 2px;
+      background: repeating-linear-gradient(to bottom,
+          #c5cdd2,
+          #c5cdd2 4px,
+          transparent 4px,
+          transparent 8px);
+      margin-left: 11px;
+    }
+  }
+}
+
+.benefits {
+  text-align: start;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: $font-size-xl;
+    font-weight: bold;
+    color: $color-text-primary;
+    margin-bottom: 1.5rem;
+  }
+
+  .benefit-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    app-benefit-card {
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: calc(25% - 0.75rem);
+      box-sizing: border-box;
+    }
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  gap: 2rem;
+
+  button {
+    font-family: 'Inter', sans-serif;
+    text-decoration: none;
+    color: black;
+    font-size: $font-size-sm;
+    font-weight: 500;
+
+    &.btn {
+      display: flex;
+      align-items: center;
+      background-color: $color-btn-primary;
+      font-weight: bold;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      text-decoration: none;
+
+      &:hover {
+        background-color: darken($color-btn-primary, 10%);
+        cursor: pointer;
+      }
+    }
+
+    &.btn-outline {
+      display: flex;
+      align-items: center;
+      color: black;
+      font-weight: bold;
+      background-color: $color-btn-secondary;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      text-decoration: none;
+      border: none;
+
+      &:hover {
+        background-color: darken($color-btn-secondary, 10%);
+        cursor: pointer;
+      }
+    }
+  }
+}

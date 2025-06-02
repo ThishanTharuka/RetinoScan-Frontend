@@ -1,0 +1,30 @@
+@import '../../../../styles/variables';
+
+.footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
+  font-family: 'Inter', sans-serif;
+
+  .buttons {
+    display: flex;
+    justify-content: space-around;
+    a {
+      text-decoration: none;
+      font-size: $font-size-base;
+      color: #4F7A96;
+      margin: 0 0.5rem;
+    }
+    a:hover {
+      color: darken($color: #4F7A96, $amount: 10%);
+      cursor: pointer;
+    }
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+  }
+}
