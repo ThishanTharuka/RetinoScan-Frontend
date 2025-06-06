@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [MatIconModule],
   templateUrl: './benefit-card.html',
-  styleUrls: ['./benefit-card.scss']
+  styleUrls: ['./benefit-card.scss'],
 })
 export class BenefitCard {
   @Input() text: string = '';

@@ -1,12 +1,12 @@
 // Font size variables
-$font-size-xs: 0.75rem;     // 12px if base is 16px
-$font-size-sm: 0.875rem;    // 14px
-$font-size-base: 1rem;      // 16px
-$font-size-md: 1.125rem;    // 18px
-$font-size-lg: 1.25rem;     // 20px
-$font-size-xl: 1.5rem;      // 24px
-$font-size-xxl: 2rem;       // 32px
-$font-size-xxxl: 3rem;      // 48px
+$font-size-xs: 0.75rem; // 12px if base is 16px
+$font-size-sm: 0.875rem; // 14px
+$font-size-base: 1rem; // 16px
+$font-size-md: 1.125rem; // 18px
+$font-size-lg: 1.25rem; // 20px
+$font-size-xl: 1.5rem; // 24px
+$font-size-xxl: 2rem; // 32px
+$font-size-xxxl: 3rem; // 48px
 
 // Example heading sizes
 $h1-font-size: $font-size-xxl;
@@ -17,9 +17,9 @@ $h5-font-size: $font-size-base;
 $h6-font-size: $font-size-sm;
 
 // font family variables
-$font-family-primary: 'Inter', sans-serif;
+$font-family-primary: "Inter", sans-serif;
 
 // Color variables
-$color-btn-primary: #1A94E5;
-$color-btn-secondary: #E8EDF2;
-$color-text-primary: #0D171C;
+$color-btn-primary: #1a94e5;
+$color-btn-secondary: #e8edf2;
+$color-text-primary: #0d171c;
