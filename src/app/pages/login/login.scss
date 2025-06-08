@@ -1,0 +1,42 @@
+@import "../../../styles/variables";
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  font-family: $font-family-primary;
+
+  .login-title {
+    font-size: $font-size-xxl;
+    font-weight: bold;
+    color: $color-text-primary;
+  }
+
+  .login-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+  }
+
+  .login-form,
+  .register-form {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0 1rem 0; 
+    gap: 1rem;
+  }
+
+  .forgot-link {
+    color: #7a8fa6;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+
+  .login-btn,
+  .register-btn {
+    font-family: $font-family-primary;
+    width: 100%;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 8px;
+  }
+}

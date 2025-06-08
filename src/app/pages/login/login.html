@@ -1,3 +1,61 @@
-<app-navbar></app-navbar>
-<p>login works!</p>
-<app-footer></app-footer>
+<div class="login-page">
+  <app-navbar [hideNavbar]="true"></app-navbar>
+  <div class="container">
+    <h2 class="login-title my-3 d-flex justify-content-center">
+      Secure access for clinicians and authorized users
+    </h2>
+    <div>
+      <div class="login-card">
+        <mat-tab-group class="col-lg-6 col-md-8 col-sm-10">
+          <mat-tab label="Login">
+            <form class="login-form mt-4">
+              <mat-form-field appearance="outline" class="login-field">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" placeholder="Email" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="login-field">
+                <mat-label>Password</mat-label>
+                <input matInput type="password" placeholder="Password" />
+              </mat-form-field>
+              <div class="login-links">
+                <a href="#" class="forgot-link">Forgot password?</a>
+              </div>
+              <button
+                mat-flat-button
+                color="primary"
+                class="login-btn"
+                type="submit"
+              >
+                Login
+              </button>
+            </form>
+          </mat-tab>
+          <mat-tab label="Register">
+            <form class="register-form mt-4">
+              <mat-form-field appearance="outline" class="register-field">
+                <mat-label>Name</mat-label>
+                <input matInput type="text" placeholder="Full Name" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="register-field">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" placeholder="Email" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="register-field">
+                <mat-label>Password</mat-label>
+                <input matInput type="password" placeholder="Password" />
+              </mat-form-field>
+              <button
+                mat-flat-button
+                color="primary"
+                class="register-btn"
+                type="submit"
+              >
+                Register
+              </button>
+            </form>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  </div>
+</div>
