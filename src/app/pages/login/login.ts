@@ -15,7 +15,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     FormsModule,
     ReactiveFormsModule,
     MatFormFieldModule,
-    MatTabsModule
+    MatTabsModule,
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
