@@ -1,4 +1,5 @@
-@import "../../../../styles/variables";
+@use "../../../../styles/variables" as *;
+@use "sass:color";
 
 .footer {
   text-align: center;
@@ -17,7 +18,7 @@
       margin: 0 0.5rem;
     }
     a:hover {
-      color: darken($color: #4f7a96, $amount: 10%);
+      color: color.adjust(#4f7a96, $lightness: -10%);
       cursor: pointer;
     }
   }

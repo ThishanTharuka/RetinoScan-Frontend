@@ -1,0 +1,151 @@
+<div class="login-page">
+  <app-navbar [hideNavbar]="true"></app-navbar>
+  <div class="container">
+    <h2 class="login-title my-3 d-flex justify-content-center">
+      Secure access for clinicians and authorized users
+    </h2>
+    <div>
+      <div class="login-card">
+        <mat-tab-group class="col-lg-6 col-md-8 col-sm-10">
+          <!-- Login Form -->
+          <mat-tab label="Login">
+            <form
+              [formGroup]="loginForm"
+              (ngSubmit)="handleLogin()"
+              class="login-form mt-4"
+            >
+              <mat-form-field appearance="outline" class="login-field">
+                <mat-label>Email</mat-label>
+                <input
+                  matInput
+                  type="email"
+                  placeholder="Email"
+                  formControlName="email"
+                />
+                <mat-error *ngIf="loginForm.get('email')?.hasError('required')"
+                  >Email is required</mat-error
+                >
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="login-field">
+                <mat-label>Password</mat-label>
+                <input
+                  matInput
+                  type="password"
+                  placeholder="Password"
+                  formControlName="password"
+                />
+                <mat-error
+                  *ngIf="loginForm.get('password')?.hasError('required')"
+                  >Password is required</mat-error
+                >
+                <mat-error
+                  *ngIf="loginForm.get('password')?.hasError('minlength')"
+                  >Password must be at least 6 characters</mat-error
+                >
+              </mat-form-field>
+              <div class="login-links">
+                <a routerLink="/forgot-password" class="forgot-link"
+                  >Forgot password?</a
+                >
+              </div>
+              <button
+                mat-flat-button
+                color="primary"
+                class="login-btn"
+                type="submit"
+                [disabled]="isLoading || loginForm.invalid"
+              >
+                <span *ngIf="!isLoading">Login</span>
+                <ng-lottie
+                  *ngIf="isLoading"
+                  [options]="loadingAnimationOptions"
+                  class="button-loading-animation"
+                  aria-hidden="true"
+                ></ng-lottie>
+              </button>
+            </form>
+          </mat-tab>
+
+          <!-- Register Form -->
+          <mat-tab label="Register">
+            <form
+              [formGroup]="registerForm"
+              (ngSubmit)="handleRegister()"
+              class="register-form mt-4"
+            >
+              <mat-form-field appearance="outline" class="register-field">
+                <mat-label>Email</mat-label>
+                <input
+                  matInput
+                  type="email"
+                  placeholder="Email"
+                  formControlName="email"
+                />
+                <mat-error
+                  *ngIf="registerForm.get('email')?.hasError('required')"
+                  >Email is required</mat-error
+                >
+                <mat-error *ngIf="registerForm.get('email')?.hasError('email')"
+                  >Invalid email format</mat-error
+                >
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="register-field">
+                <mat-label>Password</mat-label>
+                <input
+                  matInput
+                  type="password"
+                  placeholder="Password"
+                  formControlName="password"
+                />
+                <mat-error
+                  *ngIf="registerForm.get('password')?.hasError('required')"
+                  >Password is required</mat-error
+                >
+                <mat-error
+                  *ngIf="registerForm.get('password')?.hasError('minlength')"
+                  >Password must be at least 6 characters</mat-error
+                >
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="register-field">
+                <mat-label>Confirm Password</mat-label>
+                <input
+                  matInput
+                  type="password"
+                  placeholder="Confirm Password"
+                  formControlName="confirmPassword"
+                />
+                <mat-error
+                  *ngIf="
+                    registerForm.get('confirmPassword')?.hasError('required')
+                  "
+                  >Confirm Password is required</mat-error
+                >
+                <mat-error
+                  *ngIf="
+                    registerForm.get('confirmPassword')?.hasError('mismatch')
+                  "
+                  >Passwords do not match</mat-error
+                >
+              </mat-form-field>
+              <button
+                mat-flat-button
+                color="accent"
+                class="register-btn"
+                type="submit"
+                [disabled]="isLoading || registerForm.invalid"
+              >
+                <span *ngIf="!isLoading">Register</span>
+                <ng-lottie
+                  *ngIf="isLoading"
+                  [options]="loadingAnimationOptions"
+                  class="button-loading-animation"
+                  aria-hidden="true"
+                ></ng-lottie>
+              </button>
+            </form>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+  </div>
+</div>
