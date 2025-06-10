@@ -157,6 +157,7 @@ export class Login {
         panelClass: [SNACKBAR_SUCCESS_PANEL_CLASS],
       });
       this.loginForm.reset();
+      this.registerForm.reset();
     } catch (error: unknown) {
       console.error('Registration error:', error);
       const errorMessage = this.getFirebaseErrorMessage(error);
