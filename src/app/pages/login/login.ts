@@ -126,9 +126,9 @@ export class Login {
         panelClass: [SNACKBAR_SUCCESS_PANEL_CLASS],
       });
       this.router.navigate(['/dashboard']);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error', error);
-      const errorMessage = this.getFirebaseErrorMessage(error.code);
+      const errorMessage = this.getFirebaseErrorMessage(error);
       this.snackBar.open(errorMessage, 'Close', {
         duration: SNACKBAR_ERROR_DURATION,
         panelClass: [SNACKBAR_ERROR_PANEL_CLASS],
@@ -174,10 +174,10 @@ export class Login {
         duration: SNACKBAR_DEFAULT_DURATION,
         panelClass: [SNACKBAR_SUCCESS_PANEL_CLASS],
       });
-      this.router.navigate(['/dashboard']);
-    } catch (error: any) {
+      this.loginForm.reset();
+    } catch (error: unknown) {
       console.error('Registration error:', error);
-      const errorMessage = this.getFirebaseErrorMessage(error.code);
+      const errorMessage = this.getFirebaseErrorMessage(error);
       this.snackBar.open(errorMessage, 'Close', {
         duration: SNACKBAR_ERROR_DURATION,
         panelClass: [SNACKBAR_ERROR_PANEL_CLASS],
@@ -187,7 +187,7 @@ export class Login {
     }
   }
 
-  private getFirebaseErrorMessage(errorCode: string): string {
+  private getFirebaseErrorMessage(error: unknown): string {
     const errorMessages: { [key: string]: string } = {
       'auth/user-not-found': 'No account found with this email address.',
       'auth/wrong-password': 'Incorrect password. Please try again.',
@@ -203,9 +203,30 @@ export class Login {
         'Network error. Please check your connection.',
     };
 
+    if (this.isFirebaseError(error)) {
+      return (
+        errorMessages[error.code] ||
+        'An unexpected error occurred. Please try again.'
+      );
+    }
+
+    if (error instanceof Error) {
+      return `An error occurred: ${error.message}`;
+    }
+
+    return 'An unexpected error occurred. Please try again.';
+  }
+
+  private isFirebaseError(
+    error: unknown,
+  ): error is { code: string; message: string } {
     return (
-      errorMessages[errorCode] ||
-      'An unexpected error occurred. Please try again.'
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      'message' in error &&
+      typeof (error as any).code === 'string' &&
+      typeof (error as any).message === 'string'
     );
   }
 }
