@@ -62,7 +62,10 @@
         text-decoration: none;
 
         &:hover {
-          background-color: color.adjust($color-btn-secondary, $lightness: -10%);
+          background-color: color.adjust(
+            $color-btn-secondary,
+            $lightness: -10%
+          );
           cursor: pointer;
         }
       }

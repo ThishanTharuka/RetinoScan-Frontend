@@ -140,24 +140,6 @@ export class Login {
 
   async handleRegister() {
     if (this.registerForm.invalid) {
-      if (
-        this.registerForm.errors?.['mismatch'] ||
-        this.registerForm.get('confirmPassword')?.hasError('mismatch')
-      ) {
-        this.snackBar.open('Passwords do not match.', 'Close', {
-          duration: SNACKBAR_DEFAULT_DURATION,
-          panelClass: [SNACKBAR_WARNING_PANEL_CLASS],
-        });
-      } else {
-        this.snackBar.open(
-          'Please fill in all required fields correctly.',
-          'Close',
-          {
-            duration: SNACKBAR_DEFAULT_DURATION,
-            panelClass: [SNACKBAR_WARNING_PANEL_CLASS],
-          },
-        );
-      }
       return;
     }
 
