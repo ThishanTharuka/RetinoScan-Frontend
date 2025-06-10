@@ -1,0 +1,104 @@
+@use "../../../styles/variables" as *;
+
+.dashboard-page {
+  font-family: $font-family-primary;
+  min-height: 100vh;
+  background: #f5f5f5;
+
+  .dashboard-header {
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px 0;
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h1 {
+        color: $color-text-primary;
+        font-size: $font-size-xxl;
+        font-weight: 600;
+        margin: 0;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        .user-name {
+          color: $color-text-primary;
+          font-size: $font-size-lg;
+          font-weight: 500;
+        }
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-family: $font-family-primary;
+          font-weight: 600;
+        }
+      }
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+
+        .user-info {
+          flex-direction: column;
+          gap: 15px;
+        }
+      }
+    }
+  }
+
+  .dashboard-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+
+    .welcome-message {
+      background: white;
+      border-radius: 8px;
+      padding: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+
+      h2 {
+        color: $color-text-primary;
+        font-size: $font-size-xl;
+        font-weight: 600;
+        margin: 0 0 20px 0;
+      }
+
+      p {
+        color: #666;
+        font-size: $font-size-md;
+        line-height: 1.6;
+        margin: 0 0 15px 0;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      @media (max-width: 768px) {
+        padding: 30px 20px;
+
+        h2 {
+          font-size: $font-size-lg;
+        }
+
+        p {
+          font-size: $font-size-base;
+        }
+      }
+    }
+  }
+}

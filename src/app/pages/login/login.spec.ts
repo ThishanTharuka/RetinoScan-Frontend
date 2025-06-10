@@ -1,327 +1,269 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { provideRouter } from '@angular/router';
+import { provideLocationMocks } from '@angular/common/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router, provideRouter } from '@angular/router';
-import { Auth } from '@angular/fire/auth';
 import { Login } from './login';
+import { AuthService } from '../../core/services/auth.service';
+import { of } from 'rxjs';
 
-describe('Login', () => {
+// Mock AuthService
+const mockAuthService = {
+  signIn: jasmine.createSpy('signIn').and.returnValue(Promise.resolve()),
+  register: jasmine.createSpy('register').and.returnValue(Promise.resolve()),
+  getErrorMessage: jasmine
+    .createSpy('getErrorMessage')
+    .and.returnValue('Test error message'),
+  currentUser$: of(null),
+  isLoading$: of(false),
+  isAuthenticated: false,
+  currentUser: null,
+};
+
+// Mock MatSnackBar
+const mockSnackBar = {
+  open: jasmine.createSpy('open').and.returnValue({
+    dismiss: jasmine.createSpy('dismiss'),
+  }),
+};
+
+describe('Login Component', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
-  let mockRouter: jasmine.SpyObj<Router>;
-  let mockSnackBar: jasmine.SpyObj<MatSnackBar>;
+  let authService: jasmine.SpyObj<AuthService>;
+  let snackBar: jasmine.SpyObj<MatSnackBar>;
 
   beforeEach(async () => {
-    const authSpy = jasmine.createSpyObj('Auth', [], {
-      currentUser: null,
-      onAuthStateChanged: jasmine.createSpy(),
-    });
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
-
     await TestBed.configureTestingModule({
-      imports: [
-        Login,
-        ReactiveFormsModule,
-        MatSnackBarModule,
-        MatInputModule,
-        MatButtonModule,
-        MatFormFieldModule,
-        MatTabsModule,
-        BrowserAnimationsModule,
-      ],
+      imports: [Login, ReactiveFormsModule, BrowserAnimationsModule],
       providers: [
-        { provide: Auth, useValue: authSpy },
-        { provide: Router, useValue: routerSpy },
-        { provide: MatSnackBar, useValue: snackBarSpy },
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: MatSnackBar, useValue: mockSnackBar },
         provideRouter([]),
+        provideLocationMocks(),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Login);
     component = fixture.componentInstance;
-    mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    mockSnackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
-
+    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     fixture.detectChanges();
   });
 
   afterEach(() => {
-    mockRouter.navigate.calls.reset();
+    // Clear all spy calls between tests
+    mockAuthService.signIn.calls.reset();
+    mockAuthService.register.calls.reset();
+    mockAuthService.getErrorMessage.calls.reset();
     mockSnackBar.open.calls.reset();
   });
 
-  describe('Component Initialization', () => {
-    it('should create', () => {
-      expect(component).toBeTruthy();
-    });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-    it('should initialize forms', () => {
+  describe('Form Initialization', () => {
+    it('should initialize login form with email and password controls', () => {
       expect(component.loginForm).toBeDefined();
-      expect(component.registerForm).toBeDefined();
+      expect(component.loginForm.get('email')).toBeDefined();
+      expect(component.loginForm.get('password')).toBeDefined();
     });
 
-    it('should initialize with loading state as false', () => {
+    it('should initialize register form with email, password, and confirmPassword controls', () => {
+      expect(component.registerForm).toBeDefined();
+      expect(component.registerForm.get('email')).toBeDefined();
+      expect(component.registerForm.get('password')).toBeDefined();
+      expect(component.registerForm.get('confirmPassword')).toBeDefined();
+    });
+
+    it('should have required validators on login form fields', () => {
+      const emailControl = component.loginForm.get('email');
+      const passwordControl = component.loginForm.get('password');
+
+      emailControl?.setValue('');
+      passwordControl?.setValue('');
+
+      expect(emailControl?.hasError('required')).toBeTruthy();
+      expect(passwordControl?.hasError('required')).toBeTruthy();
+    });
+
+    it('should have email validator on login form email field', () => {
+      const emailControl = component.loginForm.get('email');
+
+      emailControl?.setValue('invalid-email');
+      expect(emailControl?.hasError('email')).toBeTruthy();
+
+      emailControl?.setValue('valid@email.com');
+      expect(emailControl?.hasError('email')).toBeFalsy();
+    });
+
+    it('should have minlength validator on password fields', () => {
+      const loginPasswordControl = component.loginForm.get('password');
+      const registerPasswordControl = component.registerForm.get('password');
+
+      loginPasswordControl?.setValue('123');
+      registerPasswordControl?.setValue('123');
+
+      expect(loginPasswordControl?.hasError('minlength')).toBeTruthy();
+      expect(registerPasswordControl?.hasError('minlength')).toBeTruthy();
+
+      loginPasswordControl?.setValue('123456');
+      registerPasswordControl?.setValue('123456');
+
+      expect(loginPasswordControl?.hasError('minlength')).toBeFalsy();
+      expect(registerPasswordControl?.hasError('minlength')).toBeFalsy();
+    });
+  });
+
+  describe('Login Functionality', () => {
+    beforeEach(() => {
+      component.loginForm.patchValue({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+    });
+
+    it('should call authService.signIn with correct credentials on successful login', async () => {
+      await component.handleLogin();
+
+      expect(authService.signIn).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+    });
+
+    it('should set isLoading to true during login and false after completion', async () => {
+      expect(component.isLoading).toBeFalsy();
+
+      const loginPromise = component.handleLogin();
+      expect(component.isLoading).toBeTruthy();
+
+      await loginPromise;
       expect(component.isLoading).toBeFalsy();
     });
   });
 
-  describe('Login Form Validation', () => {
-    it('should invalidate login form with empty fields', () => {
-      expect(component.loginForm.valid).toBeFalsy();
-    });
-
-    it('should invalidate login form with invalid email', () => {
-      component.loginForm.patchValue({
-        email: 'invalid-email',
-        password: 'password123',
-      });
-      expect(component.loginForm.valid).toBeFalsy();
-      expect(component.loginForm.get('email')?.hasError('email')).toBeTruthy();
-    });
-
-    it('should invalidate login form with short password', () => {
-      component.loginForm.patchValue({
+  describe('Registration Functionality', () => {
+    beforeEach(() => {
+      component.registerForm.patchValue({
         email: 'test@example.com',
-        password: '123',
+        password: 'password123',
+        confirmPassword: 'password123',
       });
-      expect(component.loginForm.valid).toBeFalsy();
-      expect(
-        component.loginForm.get('password')?.hasError('minlength'),
-      ).toBeTruthy();
     });
 
-    it('should validate login form with correct email and password', () => {
-      component.loginForm.patchValue({
+    it('should call authService.register with correct credentials on successful registration', async () => {
+      await component.handleRegister();
+
+      expect(authService.register).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'password123',
       });
-      expect(component.loginForm.valid).toBeTruthy();
-    });
-  });
-
-  describe('Registration Form Validation', () => {
-    it('should invalidate register form with empty fields', () => {
-      expect(component.registerForm.valid).toBeFalsy();
     });
 
-    it('should invalidate register form when passwords do not match', () => {
+    it('should set isLoading to true during registration and false after completion', async () => {
+      expect(component.isLoading).toBeFalsy();
+
+      const registerPromise = component.handleRegister();
+      expect(component.isLoading).toBeTruthy();
+
+      await registerPromise;
+      expect(component.isLoading).toBeFalsy();
+    });
+
+    it('should not proceed when register form is invalid', async () => {
+      component.registerForm.patchValue({
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+
+      await component.handleRegister();
+
+      expect(authService.register).not.toHaveBeenCalled();
+    });
+
+    it('should not proceed when passwords do not match', async () => {
       component.registerForm.patchValue({
         email: 'test@example.com',
         password: 'password123',
         confirmPassword: 'differentpassword',
       });
-      expect(component.registerForm.hasError('mismatch')).toBeTruthy();
+
+      await component.handleRegister();
+
+      expect(authService.register).not.toHaveBeenCalled();
     });
 
-    it('should validate register form when passwords match', () => {
-      component.registerForm.patchValue({
-        email: 'test@example.com',
-        password: 'password123',
-        confirmPassword: 'password123',
-      });
-      expect(component.registerForm.valid).toBeTruthy();
-    });
-
-    it('should invalidate register form with invalid email', () => {
+    it('should not proceed when email is invalid', async () => {
       component.registerForm.patchValue({
         email: 'invalid-email',
         password: 'password123',
         confirmPassword: 'password123',
       });
-      expect(component.registerForm.valid).toBeFalsy();
-      expect(
-        component.registerForm.get('email')?.hasError('email'),
-      ).toBeTruthy();
-    });
-  });
 
-  describe('Form State Management', () => {
-    it('should handle form validation properly for login', () => {
-      // Test with empty form
-      expect(component.loginForm.invalid).toBeTruthy();
+      await component.handleRegister();
 
-      // Test with valid data
-      component.loginForm.patchValue({
-        email: 'test@example.com',
-        password: 'password123',
-      });
-      expect(component.loginForm.valid).toBeTruthy();
+      expect(authService.register).not.toHaveBeenCalled();
     });
 
-    it('should handle form validation properly for registration', () => {
-      // Test with empty form
-      expect(component.registerForm.invalid).toBeTruthy();
-
-      // Test with valid matching passwords
+    it('should not proceed when password is too short', async () => {
       component.registerForm.patchValue({
         email: 'test@example.com',
-        password: 'password123',
-        confirmPassword: 'password123',
+        password: '123',
+        confirmPassword: '123',
       });
-      expect(component.registerForm.valid).toBeTruthy();
+
+      await component.handleRegister();
+
+      expect(authService.register).not.toHaveBeenCalled();
     });
   });
-
-  describe('Error Message Handling', () => {
-    it('should return user-friendly message for known Firebase errors', () => {
-      const error = { code: 'auth/user-not-found', message: 'User not found' };
-      const message = component['getFirebaseErrorMessage'](error);
-      expect(message).toBe('No account found with this email address.');
+  describe('Loading Animation', () => {
+    it('should have loading animation options configured', () => {
+      expect(component.loadingAnimationOptions).toBeDefined();
+      expect(component.loadingAnimationOptions.loop).toBeTruthy();
+      expect(component.loadingAnimationOptions.autoplay).toBeTruthy();
     });
 
-    it('should return generic message for unknown Firebase errors', () => {
-      const error = { code: 'auth/unknown-error', message: 'Unknown error' };
-      const message = component['getFirebaseErrorMessage'](error);
-      expect(message).toBe('An unexpected error occurred. Please try again.');
-    });
-
-    it('should handle non-Firebase errors', () => {
-      const error = new Error('Network error');
-      const message = component['getFirebaseErrorMessage'](error);
-      expect(message).toBe('An error occurred: Network error');
-    });
-
-    it('should handle completely unknown error types', () => {
-      const error = 'string error';
-      const message = component['getFirebaseErrorMessage'](error);
-      expect(message).toBe('An unexpected error occurred. Please try again.');
-    });
-
-    it('should handle all Firebase error codes', () => {
-      const testCases = [
-        {
-          code: 'auth/wrong-password',
-          expected: 'Incorrect password. Please try again.',
-        },
-        {
-          code: 'auth/invalid-email',
-          expected: 'Please enter a valid email address.',
-        },
-        {
-          code: 'auth/user-disabled',
-          expected: 'This account has been disabled.',
-        },
-        {
-          code: 'auth/too-many-requests',
-          expected: 'Too many failed attempts. Please try again later.',
-        },
-        {
-          code: 'auth/email-already-in-use',
-          expected: 'An account with this email already exists.',
-        },
-        {
-          code: 'auth/weak-password',
-          expected: 'Password should be at least 6 characters long.',
-        },
-        {
-          code: 'auth/invalid-credential',
-          expected: 'Invalid email or password. Please check your credentials.',
-        },
-        {
-          code: 'auth/network-request-failed',
-          expected: 'Network error. Please check your connection.',
-        },
-      ];
-
-      testCases.forEach((testCase) => {
-        const error = { code: testCase.code, message: 'Test message' };
-        const message = component['getFirebaseErrorMessage'](error);
-        expect(message).toBe(testCase.expected);
-      });
-    });
-  });
-
-  describe('Type Guards', () => {
-    it('should correctly identify Firebase errors', () => {
-      const firebaseError = {
-        code: 'auth/user-not-found',
-        message: 'User not found',
-      };
-      expect(component['isFirebaseError'](firebaseError)).toBeTruthy();
-    });
-
-    it('should reject invalid Firebase error objects', () => {
-      const invalidError = { code: 123, message: 'Invalid' };
-      expect(component['isFirebaseError'](invalidError)).toBeFalsy();
-    });
-
-    it('should reject non-objects', () => {
-      expect(component['isFirebaseError']('string')).toBeFalsy();
-      expect(component['isFirebaseError'](null)).toBeFalsy();
-      expect(component['isFirebaseError'](undefined)).toBeFalsy();
-    });
-
-    it('should reject objects missing required properties', () => {
-      expect(component['isFirebaseError']({ code: 'test' })).toBeFalsy();
-      expect(component['isFirebaseError']({ message: 'test' })).toBeFalsy();
-      expect(component['isFirebaseError']({})).toBeFalsy();
-    });
-  });
-
-  describe('Password Matching Validator', () => {
-    it('should validate when passwords match', () => {
-      component.registerForm.patchValue({
-        email: 'test@example.com',
-        password: 'password123',
-        confirmPassword: 'password123',
-      });
-
-      expect(component.registerForm.hasError('mismatch')).toBeFalsy();
-    });
-
-    it('should invalidate when passwords do not match', () => {
-      component.registerForm.patchValue({
-        email: 'test@example.com',
-        password: 'password123',
-        confirmPassword: 'different123',
-      });
-
-      expect(component.registerForm.hasError('mismatch')).toBeTruthy();
-    });
-
-    it('should not validate when fields are empty', () => {
-      component.registerForm.patchValue({
-        email: 'test@example.com',
-        password: '',
-        confirmPassword: '',
-      });
-
-      // Should not have mismatch error when both are empty
-      expect(component.registerForm.hasError('mismatch')).toBeFalsy();
-    });
-
-    it('should handle password validation correctly', () => {
-      // Test minimum length validation
-      component.registerForm.patchValue({
-        email: 'test@example.com',
-        password: '12345',
-        confirmPassword: '12345',
-      });
-
-      expect(
-        component.registerForm.get('password')?.hasError('minlength'),
-      ).toBeTruthy();
-      expect(
-        component.registerForm.get('confirmPassword')?.hasError('minlength'),
-      ).toBeTruthy();
-    });
-  });
-
-  describe('Loading State', () => {
-    it('should initialize loading state as false', () => {
+    it('should initialize isLoading as false', () => {
       expect(component.isLoading).toBeFalsy();
     });
+  });
 
-    it('should have loading animation options defined', () => {
-      expect(component.loadingAnimationOptions).toBeDefined();
-      expect(component.loadingAnimationOptions.loop).toBe(true);
-      expect(component.loadingAnimationOptions.autoplay).toBe(true);
+  describe('Component Integration', () => {
+    it('should render login form when component is created', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.querySelector('form')).toBeTruthy();
+    });
+
+    it('should have proper form controls in the template', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const emailInputs = compiled.querySelectorAll(
+        'input[formControlName="email"]',
+      );
+      const passwordInputs = compiled.querySelectorAll(
+        'input[formControlName="password"]',
+      );
+
+      expect(emailInputs.length).toBeGreaterThan(0);
+      expect(passwordInputs.length).toBeGreaterThan(0);
+    });
+
+    it('should have forgot password link', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const forgotPasswordLink = compiled.querySelector(
+        'a[routerLink="/forgot-password"]',
+      );
+      expect(forgotPasswordLink).toBeTruthy();
+    });
+
+    it('should have tab navigation for login and register', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const tabGroup = compiled.querySelector('mat-tab-group');
+      expect(tabGroup).toBeTruthy();
     });
   });
 });

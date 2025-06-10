@@ -13,15 +13,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
-import {
-  Auth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from '@angular/fire/auth';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // Import MatSnackBar
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
+import { AuthService } from '../../core/services/auth.service';
 
 const SNACKBAR_SUCCESS_PANEL_CLASS = 'snackbar-success';
 const SNACKBAR_ERROR_PANEL_CLASS = 'snackbar-error';
@@ -66,13 +62,14 @@ export function passwordsMatcher(
     CommonModule,
     MatSnackBarModule,
     LottieComponent,
+    RouterModule,
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
   standalone: true,
 })
 export class Login {
-  private readonly auth: Auth = inject(Auth);
+  private readonly authService = inject(AuthService);
   private readonly fb: FormBuilder = inject(FormBuilder);
   private readonly router: Router = inject(Router);
   private readonly snackBar: MatSnackBar = inject(MatSnackBar);
@@ -120,15 +117,14 @@ export class Login {
     this.isLoading = true;
     const { email, password } = this.loginForm.value;
     try {
-      await signInWithEmailAndPassword(this.auth, email, password);
+      await this.authService.signIn({ email, password });
       this.snackBar.open('Login successful!', 'Close', {
         duration: SNACKBAR_DEFAULT_DURATION,
         panelClass: [SNACKBAR_SUCCESS_PANEL_CLASS],
       });
-      this.router.navigate(['/dashboard']);
     } catch (error: unknown) {
       console.error('Login error', error);
-      const errorMessage = this.getFirebaseErrorMessage(error);
+      const errorMessage = this.authService.getErrorMessage(error);
       this.snackBar.open(errorMessage, 'Close', {
         duration: SNACKBAR_ERROR_DURATION,
         panelClass: [SNACKBAR_ERROR_PANEL_CLASS],
@@ -146,13 +142,8 @@ export class Login {
     this.isLoading = true;
     const { email, password } = this.registerForm.value;
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        this.auth,
-        email,
-        password,
-      );
-      console.log('User registered:', userCredential.user);
-      this.snackBar.open('Registration successful! Please login.', 'Close', {
+      await this.authService.register({ email, password });
+      this.snackBar.open('Registration successful!', 'Close', {
         duration: SNACKBAR_DEFAULT_DURATION,
         panelClass: [SNACKBAR_SUCCESS_PANEL_CLASS],
       });
@@ -160,7 +151,7 @@ export class Login {
       this.registerForm.reset();
     } catch (error: unknown) {
       console.error('Registration error:', error);
-      const errorMessage = this.getFirebaseErrorMessage(error);
+      const errorMessage = this.authService.getErrorMessage(error);
       this.snackBar.open(errorMessage, 'Close', {
         duration: SNACKBAR_ERROR_DURATION,
         panelClass: [SNACKBAR_ERROR_PANEL_CLASS],
@@ -168,48 +159,5 @@ export class Login {
     } finally {
       this.isLoading = false;
     }
-  }
-
-  private getFirebaseErrorMessage(error: unknown): string {
-    const errorMessages: { [key: string]: string } = {
-      'auth/user-not-found': 'No account found with this email address.',
-      'auth/wrong-password': 'Incorrect password. Please try again.',
-      'auth/invalid-email': 'Please enter a valid email address.',
-      'auth/user-disabled': 'This account has been disabled.',
-      'auth/too-many-requests':
-        'Too many failed attempts. Please try again later.',
-      'auth/email-already-in-use': 'An account with this email already exists.',
-      'auth/weak-password': 'Password should be at least 6 characters long.',
-      'auth/invalid-credential':
-        'Invalid email or password. Please check your credentials.',
-      'auth/network-request-failed':
-        'Network error. Please check your connection.',
-    };
-
-    if (this.isFirebaseError(error)) {
-      return (
-        errorMessages[error.code] ||
-        'An unexpected error occurred. Please try again.'
-      );
-    }
-
-    if (error instanceof Error) {
-      return `An error occurred: ${error.message}`;
-    }
-
-    return 'An unexpected error occurred. Please try again.';
-  }
-
-  private isFirebaseError(
-    error: unknown,
-  ): error is { code: string; message: string } {
-    return (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      'message' in error &&
-      typeof (error as any).code === 'string' &&
-      typeof (error as any).message === 'string'
-    );
   }
 }
