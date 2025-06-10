@@ -1,6 +1,5 @@
-@use "@angular/material" as mat; // Import Angular Material's Sass module
+@use "styles/variables" as *;
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
-@import "styles/variables";
 
 /* You can add global styles to this file, and also import other style files */
 
@@ -14,37 +13,28 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-//Snackbar styles (START)
-.snackbar-success {
+// Snackbar mixin to reduce duplication
+@mixin snackbar-theme($bg-color, $text-color, $button-color) {
   &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
-    background-color: $color-success !important;
-    color: white !important;
+    background-color: $bg-color !important;
+    color: $text-color !important;
   }
 
   &.mat-mdc-snack-bar-container .mat-mdc-button.mat-mdc-snack-bar-action {
-    color: white !important;
+    color: $button-color !important;
   }
+}
+
+//Snackbar styles (START)
+.snackbar-success {
+  @include snackbar-theme($color-success, white, white);
 }
 
 .snackbar-error {
-  &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
-    background-color: $color-error !important;
-    color: white !important;
-  }
-
-  &.mat-mdc-snack-bar-container .mat-mdc-button.mat-mdc-snack-bar-action {
-    color: white !important;
-  }
+  @include snackbar-theme($color-error, white, white);
 }
 
 .snackbar-warning {
-  &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
-    background-color: $color-warning !important;
-    color: black !important;
-  }
-
-  &.mat-mdc-snack-bar-container .mat-mdc-button.mat-mdc-snack-bar-action {
-    color: black !important;
-  }
+  @include snackbar-theme(#f57f17, white, white);
 }
 //Snackbar styles (END)

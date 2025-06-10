@@ -128,14 +128,11 @@ export class Login {
       this.router.navigate(['/dashboard']);
     } catch (error: any) {
       console.error('Login error', error);
-      this.snackBar.open(
-        error.message ?? 'Login failed. Please try again.',
-        'Close',
-        {
-          duration: SNACKBAR_ERROR_DURATION,
-          panelClass: [SNACKBAR_ERROR_PANEL_CLASS],
-        },
-      );
+      const errorMessage = this.getFirebaseErrorMessage(error.code);
+      this.snackBar.open(errorMessage, 'Close', {
+        duration: SNACKBAR_ERROR_DURATION,
+        panelClass: [SNACKBAR_ERROR_PANEL_CLASS],
+      });
     } finally {
       this.isLoading = false;
     }
@@ -177,20 +174,38 @@ export class Login {
         duration: SNACKBAR_DEFAULT_DURATION,
         panelClass: [SNACKBAR_SUCCESS_PANEL_CLASS],
       });
-      // Optionally navigate to login tab or clear form
-      // this.router.navigate(['/dashboard']); // Or navigate to dashboard if auto-login
+      this.router.navigate(['/dashboard']);
     } catch (error: any) {
       console.error('Registration error:', error);
-      this.snackBar.open(
-        error.message ?? 'Registration failed. Please try again.',
-        'Close',
-        {
-          duration: SNACKBAR_ERROR_DURATION,
-          panelClass: [SNACKBAR_ERROR_PANEL_CLASS],
-        },
-      );
+      const errorMessage = this.getFirebaseErrorMessage(error.code);
+      this.snackBar.open(errorMessage, 'Close', {
+        duration: SNACKBAR_ERROR_DURATION,
+        panelClass: [SNACKBAR_ERROR_PANEL_CLASS],
+      });
     } finally {
       this.isLoading = false;
     }
+  }
+
+  private getFirebaseErrorMessage(errorCode: string): string {
+    const errorMessages: { [key: string]: string } = {
+      'auth/user-not-found': 'No account found with this email address.',
+      'auth/wrong-password': 'Incorrect password. Please try again.',
+      'auth/invalid-email': 'Please enter a valid email address.',
+      'auth/user-disabled': 'This account has been disabled.',
+      'auth/too-many-requests':
+        'Too many failed attempts. Please try again later.',
+      'auth/email-already-in-use': 'An account with this email already exists.',
+      'auth/weak-password': 'Password should be at least 6 characters long.',
+      'auth/invalid-credential':
+        'Invalid email or password. Please check your credentials.',
+      'auth/network-request-failed':
+        'Network error. Please check your connection.',
+    };
+
+    return (
+      errorMessages[errorCode] ||
+      'An unexpected error occurred. Please try again.'
+    );
   }
 }
