@@ -47,7 +47,7 @@ describe('Login', () => {
     component = fixture.componentInstance;
     mockRouter = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     mockSnackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
-    
+
     fixture.detectChanges();
   });
 
@@ -91,7 +91,9 @@ describe('Login', () => {
         password: '123',
       });
       expect(component.loginForm.valid).toBeFalsy();
-      expect(component.loginForm.get('password')?.hasError('minlength')).toBeTruthy();
+      expect(
+        component.loginForm.get('password')?.hasError('minlength'),
+      ).toBeTruthy();
     });
 
     it('should validate login form with correct email and password', () => {
@@ -133,7 +135,9 @@ describe('Login', () => {
         confirmPassword: 'password123',
       });
       expect(component.registerForm.valid).toBeFalsy();
-      expect(component.registerForm.get('email')?.hasError('email')).toBeTruthy();
+      expect(
+        component.registerForm.get('email')?.hasError('email'),
+      ).toBeTruthy();
     });
   });
 
@@ -141,7 +145,7 @@ describe('Login', () => {
     it('should handle form validation properly for login', () => {
       // Test with empty form
       expect(component.loginForm.invalid).toBeTruthy();
-      
+
       // Test with valid data
       component.loginForm.patchValue({
         email: 'test@example.com',
@@ -153,7 +157,7 @@ describe('Login', () => {
     it('should handle form validation properly for registration', () => {
       // Test with empty form
       expect(component.registerForm.invalid).toBeTruthy();
-      
+
       // Test with valid matching passwords
       component.registerForm.patchValue({
         email: 'test@example.com',
@@ -191,17 +195,41 @@ describe('Login', () => {
 
     it('should handle all Firebase error codes', () => {
       const testCases = [
-        { code: 'auth/wrong-password', expected: 'Incorrect password. Please try again.' },
-        { code: 'auth/invalid-email', expected: 'Please enter a valid email address.' },
-        { code: 'auth/user-disabled', expected: 'This account has been disabled.' },
-        { code: 'auth/too-many-requests', expected: 'Too many failed attempts. Please try again later.' },
-        { code: 'auth/email-already-in-use', expected: 'An account with this email already exists.' },
-        { code: 'auth/weak-password', expected: 'Password should be at least 6 characters long.' },
-        { code: 'auth/invalid-credential', expected: 'Invalid email or password. Please check your credentials.' },
-        { code: 'auth/network-request-failed', expected: 'Network error. Please check your connection.' },
+        {
+          code: 'auth/wrong-password',
+          expected: 'Incorrect password. Please try again.',
+        },
+        {
+          code: 'auth/invalid-email',
+          expected: 'Please enter a valid email address.',
+        },
+        {
+          code: 'auth/user-disabled',
+          expected: 'This account has been disabled.',
+        },
+        {
+          code: 'auth/too-many-requests',
+          expected: 'Too many failed attempts. Please try again later.',
+        },
+        {
+          code: 'auth/email-already-in-use',
+          expected: 'An account with this email already exists.',
+        },
+        {
+          code: 'auth/weak-password',
+          expected: 'Password should be at least 6 characters long.',
+        },
+        {
+          code: 'auth/invalid-credential',
+          expected: 'Invalid email or password. Please check your credentials.',
+        },
+        {
+          code: 'auth/network-request-failed',
+          expected: 'Network error. Please check your connection.',
+        },
       ];
 
-      testCases.forEach(testCase => {
+      testCases.forEach((testCase) => {
         const error = { code: testCase.code, message: 'Test message' };
         const message = component['getFirebaseErrorMessage'](error);
         expect(message).toBe(testCase.expected);
@@ -211,7 +239,10 @@ describe('Login', () => {
 
   describe('Type Guards', () => {
     it('should correctly identify Firebase errors', () => {
-      const firebaseError = { code: 'auth/user-not-found', message: 'User not found' };
+      const firebaseError = {
+        code: 'auth/user-not-found',
+        message: 'User not found',
+      };
       expect(component['isFirebaseError'](firebaseError)).toBeTruthy();
     });
 
@@ -240,7 +271,7 @@ describe('Login', () => {
         password: 'password123',
         confirmPassword: 'password123',
       });
-      
+
       expect(component.registerForm.hasError('mismatch')).toBeFalsy();
     });
 
@@ -250,7 +281,7 @@ describe('Login', () => {
         password: 'password123',
         confirmPassword: 'different123',
       });
-      
+
       expect(component.registerForm.hasError('mismatch')).toBeTruthy();
     });
 
@@ -260,7 +291,7 @@ describe('Login', () => {
         password: '',
         confirmPassword: '',
       });
-      
+
       // Should not have mismatch error when both are empty
       expect(component.registerForm.hasError('mismatch')).toBeFalsy();
     });
@@ -272,9 +303,13 @@ describe('Login', () => {
         password: '12345',
         confirmPassword: '12345',
       });
-      
-      expect(component.registerForm.get('password')?.hasError('minlength')).toBeTruthy();
-      expect(component.registerForm.get('confirmPassword')?.hasError('minlength')).toBeTruthy();
+
+      expect(
+        component.registerForm.get('password')?.hasError('minlength'),
+      ).toBeTruthy();
+      expect(
+        component.registerForm.get('confirmPassword')?.hasError('minlength'),
+      ).toBeTruthy();
     });
   });
 
