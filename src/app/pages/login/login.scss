@@ -38,5 +38,15 @@
     font-weight: 600;
     font-size: 1.1rem;
     margin-top: 8px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .button-loading-animation {
+      width: 45px;
+      height: 45px;
+      display: block;
+    }
   }
 }

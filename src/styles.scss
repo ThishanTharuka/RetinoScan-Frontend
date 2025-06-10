@@ -1,3 +1,4 @@
+@use "@angular/material" as mat; // Import Angular Material's Sass module
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 @import "styles/variables";
 
@@ -7,7 +8,43 @@ html,
 body {
   height: 100%;
 }
+
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+//Snackbar styles (START)
+.snackbar-success {
+  &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    background-color: $color-success !important;
+    color: white !important;
+  }
+
+  &.mat-mdc-snack-bar-container .mat-mdc-button.mat-mdc-snack-bar-action {
+    color: white !important;
+  }
+}
+
+.snackbar-error {
+  &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    background-color: $color-error !important;
+    color: white !important;
+  }
+
+  &.mat-mdc-snack-bar-container .mat-mdc-button.mat-mdc-snack-bar-action {
+    color: white !important;
+  }
+}
+
+.snackbar-warning {
+  &.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+    background-color: $color-warning !important;
+    color: black !important;
+  }
+
+  &.mat-mdc-snack-bar-container .mat-mdc-button.mat-mdc-snack-bar-action {
+    color: black !important;
+  }
+}
+//Snackbar styles (END)
