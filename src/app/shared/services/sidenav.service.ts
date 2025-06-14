@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Subject, fromEvent } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 export interface NavItem {
   id: string;
@@ -12,11 +13,11 @@ export interface NavItem {
 @Injectable({
   providedIn: 'root',
 })
-export class SidenavService {
+export class SidenavService implements OnDestroy {
   private readonly isCollapsedSubject = new BehaviorSubject<boolean>(false);
   private readonly isMobileSubject = new BehaviorSubject<boolean>(false);
   private readonly isOpenSubject = new BehaviorSubject<boolean>(false);
-  private resizeTimeout: number | null = null;
+  private readonly destroy$ = new Subject<void>();
 
   // Observable streams
   public isCollapsed$ = this.isCollapsedSubject.asObservable();
@@ -110,21 +111,24 @@ export class SidenavService {
     }
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   // Initialize responsive behavior
   private initializeResponsiveListener(): void {
     if (typeof window !== 'undefined') {
       this.checkScreenSize();
-      window.addEventListener('resize', () => this.debouncedCheckScreenSize());
-    }
-  }
 
-  private debouncedCheckScreenSize(): void {
-    if (this.resizeTimeout) {
-      clearTimeout(this.resizeTimeout);
+      // Use RxJS fromEvent with debounceTime for better performance and cleanup
+      fromEvent(window, 'resize')
+        .pipe(
+          debounceTime(150), // 150ms debounce delay
+          takeUntil(this.destroy$),
+        )
+        .subscribe(() => this.checkScreenSize());
     }
-    this.resizeTimeout = window.setTimeout(() => {
-      this.checkScreenSize();
-    }, 150); // 150ms debounce delay
   }
 
   private checkScreenSize(): void {

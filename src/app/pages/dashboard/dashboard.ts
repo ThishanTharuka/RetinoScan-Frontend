@@ -44,7 +44,9 @@ export class Dashboard implements OnInit, OnDestroy {
     if (this.currentUser?.displayName) {
       return this.currentUser.displayName;
     }
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    return this.currentUser?.email?.split('@')[0] || 'User';
+    const emailLocalPart = this.currentUser?.email?.split('@')[0]?.trim();
+    return emailLocalPart && emailLocalPart.length > 0
+      ? emailLocalPart
+      : 'User';
   }
 }
