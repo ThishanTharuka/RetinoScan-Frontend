@@ -9,7 +9,12 @@
     <div class="brand" *ngIf="!isCollapsed || isMobile">
       <h2>RetinoScan</h2>
     </div>
-    <button matIconButton class="toggle-btn" (click)="toggleSidenav()">
+    <button
+      matIconButton
+      class="toggle-btn"
+      (click)="toggleSidenav()"
+      aria-label="Toggle Sidebar"
+    >
       <mat-icon>{{ getToggleIcon() }}</mat-icon>
     </button>
   </div>

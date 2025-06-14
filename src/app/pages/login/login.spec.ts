@@ -188,7 +188,7 @@ describe('Login Component', () => {
       component.registerForm.patchValue({
         email: 'test@example.com',
         password: 'password123',
-        confirmPassword: 'differentPassword',
+        confirmPassword: 'differentpassword',
       });
 
       await component.handleRegister();

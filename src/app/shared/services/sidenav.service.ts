@@ -16,6 +16,7 @@ export class SidenavService {
   private readonly isCollapsedSubject = new BehaviorSubject<boolean>(false);
   private readonly isMobileSubject = new BehaviorSubject<boolean>(false);
   private readonly isOpenSubject = new BehaviorSubject<boolean>(false);
+  private resizeTimeout: number | null = null;
 
   // Observable streams
   public isCollapsed$ = this.isCollapsedSubject.asObservable();
@@ -113,8 +114,17 @@ export class SidenavService {
   private initializeResponsiveListener(): void {
     if (typeof window !== 'undefined') {
       this.checkScreenSize();
-      window.addEventListener('resize', () => this.checkScreenSize());
+      window.addEventListener('resize', () => this.debouncedCheckScreenSize());
     }
+  }
+
+  private debouncedCheckScreenSize(): void {
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+    this.resizeTimeout = window.setTimeout(() => {
+      this.checkScreenSize();
+    }, 150); // 150ms debounce delay
   }
 
   private checkScreenSize(): void {

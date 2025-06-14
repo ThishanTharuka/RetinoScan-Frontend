@@ -131,7 +131,7 @@
   }
 }
 
-::ng-deep {
+:host ::ng-deep {
   .mat-mdc-tooltip-surface {
     font-family: $font-family-primary !important;
   }
