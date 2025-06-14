@@ -1,0 +1,11 @@
+<div class="dashboard-layout">
+  <app-sidenav></app-sidenav>
+
+  <main
+    class="main-content"
+    [class.collapsed]="isCollapsed && !isMobile"
+    [class.mobile]="isMobile"
+  >
+    <ng-content></ng-content>
+  </main>
+</div>
