@@ -48,7 +48,6 @@ describe('Login Component', () => {
     fixture = TestBed.createComponent(Login);
     component = fixture.componentInstance;
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    snackBar = TestBed.inject(MatSnackBar) as jasmine.SpyObj<MatSnackBar>;
     fixture.detectChanges();
   });
 
@@ -189,7 +188,7 @@ describe('Login Component', () => {
       component.registerForm.patchValue({
         email: 'test@example.com',
         password: 'password123',
-        confirmPassword: 'differentpassword',
+        confirmPassword: 'differentPassword',
       });
 
       await component.handleRegister();
