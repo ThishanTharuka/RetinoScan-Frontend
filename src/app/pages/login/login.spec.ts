@@ -114,6 +114,18 @@ describe('Login Component', () => {
       expect(loginPasswordControl?.hasError('minlength')).toBeFalsy();
       expect(registerPasswordControl?.hasError('minlength')).toBeFalsy();
     });
+
+    it('should preserve other errors on confirmPassword when passwords mismatch', () => {
+      const passwordControl = component.registerForm.get('password');
+      const confirmControl = component.registerForm.get('confirmPassword');
+
+      passwordControl?.setValue('password123');
+      confirmControl?.setValue('123'); // triggers minlength
+      component.registerForm.updateValueAndValidity();
+
+      expect(confirmControl?.errors?.['minlength']).toBeTruthy();
+      expect(confirmControl?.errors?.['mismatch']).toBeTruthy();
+    });
   });
 
   describe('Login Functionality', () => {

@@ -33,7 +33,9 @@ export function passwordsMatcher(
   const confirmPassword = control.get('confirmPassword');
 
   if (password && confirmPassword && password.value !== confirmPassword.value) {
-    confirmPassword.setErrors({ mismatch: true });
+    // Preserve existing errors while adding mismatch
+    const existingErrors = confirmPassword.errors || {};
+    confirmPassword.setErrors({ ...existingErrors, mismatch: true });
     return { mismatch: true };
   } else if (confirmPassword) {
     const errors = confirmPassword.errors;
