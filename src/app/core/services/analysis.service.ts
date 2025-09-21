@@ -12,6 +12,30 @@ export interface PatientInfo {
   medicalHistory?: string;
 }
 
+// FastAPI Model API Response Interface
+export interface FastAPIResponse {
+  status: string;
+  patient_id: string;
+  patient_name: string;
+  predictions: Array<{
+    condition: string;
+    confidence: number;
+    probability: number;
+  }>;
+  primary_diagnosis: string;
+  confidence_score: number;
+  processing_time: number;
+  timestamp: string;
+  metadata?: {
+    model_version: string;
+    model_architecture: string;
+    preprocessing: string;
+    image_size?: number[];
+    file_name?: string;
+    file_size?: number;
+  };
+}
+
 export interface AnalysisResult {
   id: string;
   userId: string;
@@ -49,6 +73,7 @@ export interface CreateAnalysisDto {
 })
 export class AnalysisService {
   private readonly apiUrl = `${environment.apiUrl}/analysis`;
+  private readonly fastApiUrl = 'http://localhost:8001/api/v1'; // Your FastAPI Model API
 
   constructor(
     private readonly http: HttpClient,
@@ -64,8 +89,43 @@ export class AnalysisService {
           }),
       ),
     );
-  } /**
-   * Upload retinal image for analysis
+  }
+
+  /**
+   * Send image directly to FastAPI Model API for prediction
+   */
+  uploadToFastAPI(
+    file: File,
+    patientInfo: PatientInfo,
+  ): Observable<FastAPIResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('patient_id', patientInfo.patientId);
+    formData.append('patient_name', patientInfo.patientId); // Using patientId as name
+
+    // Call FastAPI directly (no auth needed for model API)
+    return this.http.post<FastAPIResponse>(
+      `${this.fastApiUrl}/predict/upload`,
+      formData,
+    );
+  }
+
+  /**
+   * Get FastAPI model information
+   */
+  getFastAPIModelInfo(): Observable<any> {
+    return this.http.get(`${this.fastApiUrl}/model/info`);
+  }
+
+  /**
+   * Check FastAPI health
+   */
+  checkFastAPIHealth(): Observable<any> {
+    return this.http.get(`${this.fastApiUrl}/health`);
+  }
+
+  /**
+   * Upload retinal image for analysis (Original NestJS backend)
    */
   uploadForAnalysis(
     file: File,

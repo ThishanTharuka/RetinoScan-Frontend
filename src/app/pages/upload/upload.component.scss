@@ -531,3 +531,31 @@
 }
 
 /* Reduce overall card title size slightly for better visual balance */
+
+/* Custom Snackbar Styles for Diabetic Retinopathy Results */
+::ng-deep .snackbar-warning {
+  background-color: #ff9800 !important;
+  color: white !important;
+
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+  }
+}
+
+::ng-deep .snackbar-success {
+  background-color: #4caf50 !important;
+  color: white !important;
+
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+  }
+}
+
+::ng-deep .snackbar-error {
+  background-color: #f44336 !important;
+  color: white !important;
+
+  .mat-mdc-snack-bar-action {
+    color: white !important;
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -196,54 +196,139 @@ export class UploadComponent implements OnInit {
     }
 
     this.isUploading.set(true);
+
     // Gather patient data and file
     const patientData = this.getFormData();
     const file = this.selectedFiles()[0];
+
     const submissionData = {
-      patientId: patientData.patientName,
+      patientId: patientData.patientId,
       age: patientData.age,
       gender: patientData.gender,
-      medicalHistory: `Patient ID: ${patientData.patientId}, DOB: ${patientData.dateOfBirth?.toDateString()}`,
+      medicalHistory: `Patient Name: ${patientData.patientName}, DOB: ${patientData.dateOfBirth?.toDateString()}`,
     };
-    let upload$;
-    // Handle synchronous errors (e.g., invalid age)
+
     try {
-      upload$ = this.analysisService.uploadForAnalysis(file, submissionData);
-    } catch (syncError: any) {
-      console.error('Synchronous upload error:', syncError);
-      this.snackBar.open(syncError.message || 'Upload failed', 'Close', {
-        duration: 3000,
-        panelClass: ['snackbar-error'],
-      });
-      this.isUploading.set(false);
-      return;
-    }
-    try {
-      await new Promise((resolve, reject) => {
-        upload$.subscribe({
-          next: (result) => {
-            this.snackBar.open('Analysis submitted successfully!', 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-success'],
-            });
-            setTimeout(() => this.router.navigate(['/dashboard']), 2000);
-            resolve(result);
+      // First check if FastAPI is running
+      await new Promise<any>((resolve, reject) => {
+        this.analysisService.checkFastAPIHealth().subscribe({
+          next: (health) => {
+            console.log('FastAPI Health:', health);
+            resolve(health);
           },
-          error: (err: any) => {
-            console.error('Upload error:', err);
-            const message =
-              err?.error?.message || err.message || 'Upload failed';
-            this.snackBar.open(message, 'Close', {
-              duration: 3000,
-              panelClass: ['snackbar-error'],
-            });
-            reject(err);
+          error: (err) => {
+            console.error('FastAPI not available:', err);
+            this.snackBar.open(
+              'Model API is not available. Please ensure the model server is running.',
+              'Close',
+              {
+                duration: 5000,
+                panelClass: ['snackbar-error'],
+              },
+            );
+            reject(new Error('FastAPI not available'));
           },
         });
       });
+
+      // Send to FastAPI for prediction
+      const prediction = await new Promise<any>((resolve, reject) => {
+        this.analysisService.uploadToFastAPI(file, submissionData).subscribe({
+          next: (result) => {
+            console.log('FastAPI Prediction Result:', result);
+            resolve(result);
+          },
+          error: (err) => {
+            console.error('FastAPI prediction error:', err);
+
+            // Show specific error message based on error type
+            let errorMessage = 'Prediction failed';
+
+            if (err.status === 0) {
+              errorMessage =
+                'Cannot connect to model server. Please ensure it is running on port 8001.';
+            } else if (err.status === 400) {
+              errorMessage = `Invalid request: ${err.error?.detail || 'Bad request'}`;
+            } else if (err.status === 503) {
+              errorMessage =
+                'Model is not loaded. Please wait for the server to initialize.';
+            } else if (err.error?.detail) {
+              errorMessage = `Server error: ${err.error.detail}`;
+            } else if (err.message) {
+              errorMessage = `Error: ${err.message}`;
+            }
+
+            this.snackBar.open(errorMessage, 'Close', {
+              duration: 5000,
+              panelClass: ['snackbar-error'],
+            });
+            reject(new Error(errorMessage));
+          },
+        });
+      });
+
+      // Show success message with prediction results
+      const primaryDiagnosis = prediction.primary_diagnosis || 'No diagnosis';
+      const confidence = Math.round((prediction.confidence_score || 0) * 100);
+
+      // Map diabetic retinopathy levels to user-friendly names
+      const severityMap: { [key: number]: string } = {
+        0: 'No Diabetic Retinopathy',
+        1: 'Mild Diabetic Retinopathy',
+        2: 'Moderate Diabetic Retinopathy',
+        3: 'Severe Diabetic Retinopathy',
+        4: 'Proliferative Diabetic Retinopathy',
+      };
+
+      // Determine severity level based on predictions with detailed condition names
+      let severityLevel = 0;
+      let maxConfidence = 0;
+
+      // Create a mapping from detailed condition names to severity levels
+      const conditionToSeverity: { [key: string]: number } = {
+        'No Diabetic Retinopathy': 0,
+        'Mild Diabetic Retinopathy': 1,
+        'Moderate Diabetic Retinopathy': 2,
+        'Severe Diabetic Retinopathy': 3,
+        'Proliferative Diabetic Retinopathy': 4,
+      };
+
+      prediction.predictions?.forEach((pred: any) => {
+        if (pred.confidence > maxConfidence) {
+          maxConfidence = pred.confidence;
+          severityLevel = conditionToSeverity[pred.condition] || 0;
+        }
+      });
+
+      const severityName = severityMap[severityLevel] || primaryDiagnosis;
+      const urgencyLevel = this.getUrgencyLevel(severityLevel);
+      const snackbarClass = this.getSnackbarClass(severityLevel);
+
+      this.snackBar.open(
+        `${urgencyLevel} - ${severityName} (${confidence}% confidence)`,
+        'Close',
+        {
+          duration: 10000,
+          panelClass: snackbarClass,
+        },
+      );
+
+      // Store detailed result for dashboard display
+      const detailedResult = {
+        ...prediction,
+        severity_level: severityLevel,
+        severity_name: severityName,
+        urgency_level: urgencyLevel,
+        recommendations: this.getRecommendations(severityLevel),
+      };
+
+      console.log('Detailed prediction result:', detailedResult);
+
+      // Navigate to dashboard after showing results
+      setTimeout(() => this.router.navigate(['/dashboard']), 3000);
     } catch (error: any) {
-      console.error('Submit error:', error);
-      // Already shown detailed error above
+      console.error('Analysis submission error:', error);
+      // Error messages already shown in individual catch blocks
     } finally {
       this.isUploading.set(false);
     }
@@ -253,5 +338,54 @@ export class UploadComponent implements OnInit {
   resetForm() {
     this.uploadForm.reset();
     this.selectedFiles.set([]);
+  }
+
+  // Helper method to determine urgency level
+  private getUrgencyLevel(severityLevel: number): string {
+    if (severityLevel >= 3) return '🚨 URGENT';
+    if (severityLevel >= 2) return '⚠️ MODERATE';
+    if (severityLevel >= 1) return '💛 MILD';
+    return '✅ NORMAL';
+  }
+
+  // Helper method to get snackbar CSS class
+  private getSnackbarClass(severityLevel: number): string[] {
+    if (severityLevel >= 3) return ['snackbar-error'];
+    if (severityLevel >= 1) return ['snackbar-warning'];
+    return ['snackbar-success'];
+  }
+
+  // Helper method to get recommendations based on severity
+  private getRecommendations(severityLevel: number): string[] {
+    switch (severityLevel) {
+      case 0:
+        return ['Continue regular eye exams', 'Maintain healthy lifestyle'];
+      case 1:
+        return [
+          'Schedule follow-up in 6-12 months',
+          'Monitor blood sugar levels',
+          'Consider lifestyle modifications',
+        ];
+      case 2:
+        return [
+          'Schedule follow-up in 3-6 months',
+          'Consult with ophthalmologist',
+          'Optimize diabetes management',
+        ];
+      case 3:
+        return [
+          'Urgent ophthalmologist referral required',
+          'Consider laser treatment',
+          'Intensive diabetes management',
+        ];
+      case 4:
+        return [
+          'IMMEDIATE ophthalmologist consultation',
+          'May require surgery',
+          'Emergency diabetes management',
+        ];
+      default:
+        return ['Consult with healthcare provider'];
+    }
   }
 }
