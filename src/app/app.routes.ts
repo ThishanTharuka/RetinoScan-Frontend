@@ -27,6 +27,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'upload',
+    loadComponent: () =>
+      import('./pages/upload/upload.component').then((m) => m.UploadComponent),
+    canActivate: [AuthGuard],
+  },
+  {
     path: '**',
     redirectTo: '',
   },

@@ -1,0 +1,226 @@
+<app-dashboard-layout>
+  <div class="upload-container">
+    <div class="upload-header">
+      <h1>Patient Analysis Upload</h1>
+      <p>
+        Enter patient information and upload retinal image for AI-powered
+        analysis
+      </p>
+    </div>
+
+    <div class="upload-grid">
+      <!-- Main form column -->
+      <div class="main-column">
+        <mat-card class="upload-card flat-card">
+          <mat-card-header>
+            <mat-card-title>Upload Patient Data</mat-card-title>
+            <mat-card-subtitle
+              >Patient information and retinal image</mat-card-subtitle
+            >
+          </mat-card-header>
+
+          <mat-card-content>
+            <form [formGroup]="uploadForm" class="upload-form">
+              <!-- Patient Information Section -->
+              <div class="form-section">
+                <h3>Patient Information</h3>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Patient Name</mat-label>
+                    <input matInput formControlName="patientName" required />
+                    <mat-error
+                      >Patient name is required (minimum 2
+                      characters)</mat-error
+                    >
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Patient ID</mat-label>
+                    <input matInput formControlName="patientId" required />
+                    <mat-error
+                      >Patient ID is required (minimum 3 characters)</mat-error
+                    >
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Gender</mat-label>
+                    <mat-select formControlName="gender" required>
+                      <mat-option
+                        *ngFor="let option of genderOptions"
+                        [value]="option.value"
+                      >
+                        {{ option.label }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error>Gender is required</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Date of Birth</mat-label>
+                    <input
+                      matInput
+                      [matDatepicker]="picker"
+                      formControlName="dateOfBirth"
+                      required
+                    />
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-error>Date of birth is required</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>Age</mat-label>
+                    <input matInput formControlName="age" readonly />
+                    <mat-hint>Calculated automatically</mat-hint>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Image Upload Section -->
+              <div class="form-section">
+                <h3>
+                  Retinal Image Upload <span class="required-marker">*</span>
+                </h3>
+                <p class="upload-instructions">
+                  Please upload a high-quality retinal image for analysis.
+                  Supported formats: JPG, PNG, TIFF (Max size: 10MB)
+                </p>
+
+                <!-- Material Design File Upload -->
+                <div class="file-upload-area">
+                  <input
+                    type="file"
+                    #fileInput
+                    accept="image/*"
+                    (change)="onFileSelect($event)"
+                    style="display: none"
+                  />
+
+                  <div
+                    class="upload-zone"
+                    [class.has-files]="selectedFiles().length > 0"
+                  >
+                    <div
+                      class="upload-prompt"
+                      *ngIf="selectedFiles().length === 0"
+                    >
+                      <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                      <h4>Upload Retinal Image</h4>
+                      <p>Click to select or drag and drop an image file</p>
+                      <button
+                        mat-stroked-button
+                        color="primary"
+                        type="button"
+                        (click)="fileInput.click()"
+                      >
+                        <mat-icon>add_photo_alternate</mat-icon>
+                        Select Image
+                      </button>
+                    </div>
+
+                    <!-- Selected Files Display -->
+                    <div
+                      class="selected-files"
+                      *ngIf="selectedFiles().length > 0"
+                    >
+                      <h4>Selected Image:</h4>
+                      <div
+                        class="file-card"
+                        *ngFor="let file of selectedFiles(); let i = index"
+                      >
+                        <div class="file-info">
+                          <mat-icon color="primary">image</mat-icon>
+                          <div class="file-details">
+                            <span class="file-name">{{ file.name }}</span>
+                            <span class="file-size">{{
+                              formatFileSize(file.size)
+                            }}</span>
+                          </div>
+                        </div>
+                        <button
+                          mat-icon-button
+                          color="warn"
+                          (click)="removeFile(i)"
+                          matTooltip="Remove file"
+                        >
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+
+                      <button
+                        mat-stroked-button
+                        color="primary"
+                        type="button"
+                        (click)="fileInput.click()"
+                        class="change-file-btn"
+                      >
+                        <mat-icon>edit</mat-icon>
+                        Change Image
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </mat-card-content>
+
+          <mat-card-actions class="form-actions save-actions">
+            <div class="actions-inner">
+              <button
+                mat-raised-button
+                color="primary"
+                class="save-btn"
+                [disabled]="!isFormValid() || isUploading()"
+                (click)="submitAnalysis()"
+              >
+                <mat-icon class="btn-icon" aria-hidden="true">save</mat-icon>
+                <span class="btn-text">Save</span>
+              </button>
+            </div>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- Progress Indicator moved inside main column so it scrolls with the form -->
+        <mat-card class="progress-card" *ngIf="isUploading()">
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          <p>Processing your analysis request...</p>
+        </mat-card>
+      </div>
+
+      <!-- Right sidebar help column -->
+      <aside class="sidebar-column">
+        <mat-card class="help-panel sticky-help">
+          <mat-card-header>
+            <mat-card-title>Help and Support</mat-card-title>
+            <mat-card-subtitle
+              >Explore actions you might be interested in.</mat-card-subtitle
+            >
+          </mat-card-header>
+
+          <mat-card-content>
+            <mat-accordion class="help-accordion" multi>
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>Action</mat-panel-title>
+                  <mat-panel-description></mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <div class="help-content">
+                  <p>This is an example text.</p>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </mat-card-content>
+        </mat-card>
+      </aside>
+    </div>
+  </div>
+</app-dashboard-layout>

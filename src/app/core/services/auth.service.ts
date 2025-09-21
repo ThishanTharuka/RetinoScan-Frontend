@@ -185,6 +185,16 @@ export class AuthService {
   }
 
   /**
+   * Get Firebase ID token for API authentication
+   */
+  async getIdToken(): Promise<string> {
+    if (!this.auth.currentUser) {
+      throw new Error('User not authenticated');
+    }
+    return await this.auth.currentUser.getIdToken();
+  }
+
+  /**
    * Get user-friendly error message from Firebase auth error
    */
   getErrorMessage(error: unknown): string {
