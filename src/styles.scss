@@ -81,7 +81,8 @@ body {
 
   &:focus {
     border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    outline: 2px solid rgba(59, 130, 246, 0.2);
+    outline-offset: 1px;
   }
 }
 
@@ -98,4 +99,28 @@ body {
     "Segoe UI",
     Roboto,
     sans-serif;
+}
+
+/* Remove Material Design shadows for clean look */
+.mat-mdc-card,
+.mat-mdc-elevated-button,
+.mat-mdc-fab,
+.mat-mdc-mini-fab,
+.mat-mdc-dialog-container,
+.mat-mdc-snack-bar-container,
+.mat-mdc-menu-panel {
+  box-shadow: none !important;
+  border: 1px solid #e0e0e0;
+}
+
+.mat-mdc-card {
+  border-radius: 8px;
+}
+
+.mat-mdc-elevated-button:not([disabled]) {
+  border: 1px solid #e0e0e0;
+}
+
+.mat-mdc-elevated-button:hover:not([disabled]) {
+  border-color: #bdbdbd;
 }

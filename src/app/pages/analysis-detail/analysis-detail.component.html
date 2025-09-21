@@ -1,0 +1,389 @@
+<app-dashboard-layout>
+  <div class="analysis-detail">
+    <!-- Header Section -->
+    <div class="header">
+      <div class="header-content">
+        <button mat-icon-button (click)="goBack()" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="header-text">
+          <h1>Analysis Details</h1>
+          <p *ngIf="analysis()">{{ formatDate(analysis()!.uploadDate) }}</p>
+        </div>
+        <div class="header-actions">
+          <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="analysis()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="downloadReport()">
+              <mat-icon>download</mat-icon>
+              <span>Download Report</span>
+            </button>
+            <button mat-menu-item (click)="shareAnalysis()">
+              <mat-icon>share</mat-icon>
+              <span>Share Analysis</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button
+              mat-menu-item
+              (click)="deleteAnalysis()"
+              class="delete-action"
+            >
+              <mat-icon>delete</mat-icon>
+              <span>Delete Analysis</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading()">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading analysis details...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-container" *ngIf="error() && !isLoading()">
+      <mat-icon class="error-icon">error</mat-icon>
+      <h2>Failed to Load Analysis</h2>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="loadAnalysisDetail()">
+        Try Again
+      </button>
+    </div>
+
+    <!-- Analysis Content -->
+    <div
+      class="analysis-content"
+      *ngIf="analysis() && !isLoading() && !error()"
+    >
+      <div class="content-grid">
+        <!-- Left Column - Image and Basic Info -->
+        <div class="left-column">
+          <!-- Retina Image Card -->
+          <mat-card class="image-card">
+            <mat-card-header>
+              <mat-card-title>Retinal Image</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="image-container">
+                <img
+                  [src]="analysis()!.retinaImageUrl"
+                  [alt]="
+                    'Retinal scan for ' +
+                    (analysis()!.patientInfo?.name || 'patient')
+                  "
+                  class="retina-image"
+                  (error)="onImageError($event)"
+                />
+              </div>
+              <div class="image-info">
+                <div class="info-item">
+                  <mat-icon>calendar_today</mat-icon>
+                  <span>{{ formatDate(analysis()!.uploadDate) }}</span>
+                </div>
+                <div class="info-item">
+                  <mat-icon>insert_drive_file</mat-icon>
+                  <span
+                    >Original file:
+                    {{ analysis()!.fileName || "retina-scan.jpg" }}</span
+                  >
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Patient Information Card -->
+          <mat-card class="patient-card" *ngIf="analysis()!.patientInfo">
+            <mat-card-header>
+              <mat-card-title>Patient Information</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-list>
+                <mat-list-item>
+                  <mat-icon matListItemIcon>person</mat-icon>
+                  <div matListItemTitle>
+                    {{ analysis()!.patientInfo?.name || "Unknown" }}
+                  </div>
+                  <div matListItemLine>Patient Name</div>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item>
+                  <mat-icon matListItemIcon>cake</mat-icon>
+                  <div matListItemTitle>
+                    {{ analysis()!.patientInfo?.age || "Unknown" }} years old
+                  </div>
+                  <div matListItemLine>Age</div>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item>
+                  <mat-icon matListItemIcon>person_outline</mat-icon>
+                  <div matListItemTitle>
+                    {{ analysis()!.patientInfo?.gender || "Unknown" }}
+                  </div>
+                  <div matListItemLine>Gender</div>
+                </mat-list-item>
+                <mat-divider
+                  *ngIf="analysis()!.patientInfo?.medicalHistory"
+                ></mat-divider>
+                <mat-list-item *ngIf="analysis()!.patientInfo?.medicalHistory">
+                  <mat-icon matListItemIcon>history</mat-icon>
+                  <div matListItemTitle>
+                    {{ analysis()!.patientInfo?.medicalHistory }}
+                  </div>
+                  <div matListItemLine>Medical History</div>
+                </mat-list-item>
+              </mat-list>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Right Column - Analysis Results -->
+        <div class="right-column">
+          <!-- Analysis Status Card -->
+          <mat-card class="status-card">
+            <mat-card-header>
+              <mat-card-title>Analysis Status</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="status-info">
+                <div class="status-item">
+                  <mat-icon [class]="getStatusClass(analysis()!.status)">
+                    {{ getStatusIcon(analysis()!.status) }}
+                  </mat-icon>
+                  <span
+                    class="status-text"
+                    [class]="getStatusClass(analysis()!.status)"
+                  >
+                    {{ analysis()!.status | titlecase }}
+                  </span>
+                </div>
+                <div class="analysis-id">
+                  <span class="label">Analysis ID:</span>
+                  <span class="value">{{ analysis()!.id }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Primary Results Card -->
+          <mat-card class="results-card" *ngIf="analysis()!.prediction">
+            <mat-card-header>
+              <mat-card-title>Primary Analysis Results</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="primary-result">
+                <div class="diagnosis-section">
+                  <h3>{{ analysis()!.prediction?.primary_diagnosis }}</h3>
+                  <div class="severity-info">
+                    <mat-chip-set>
+                      <mat-chip
+                        [class]="
+                          getSeverityClass(
+                            analysis()!.prediction?.severity_level
+                          )
+                        "
+                      >
+                        <mat-icon>{{
+                          getSeverityIcon(
+                            analysis()!.prediction?.severity_level
+                          )
+                        }}</mat-icon>
+                        {{ analysis()!.prediction?.severity_name }}
+                      </mat-chip>
+                      <mat-chip
+                        [color]="
+                          getUrgencyColor(
+                            analysis()!.prediction?.urgency_level || 'low'
+                          )
+                        "
+                        selected
+                      >
+                        {{ analysis()!.prediction?.urgency_level || "low" }}
+                      </mat-chip>
+                    </mat-chip-set>
+                  </div>
+                </div>
+
+                <div class="confidence-section">
+                  <div class="confidence-item">
+                    <span class="label">Confidence Score</span>
+                    <div class="confidence-bar">
+                      <div
+                        class="confidence-fill"
+                        [style.width.%]="getConfidencePercentage(analysis()!)"
+                      ></div>
+                      <span class="confidence-text"
+                        >{{ getConfidencePercentage(analysis()!) }}%</span
+                      >
+                    </div>
+                  </div>
+
+                  <div class="metrics">
+                    <div class="metric">
+                      <span class="label">Processing Time</span>
+                      <span class="value"
+                        >{{
+                          analysis()!.prediction?.processing_time?.toFixed(2)
+                        }}s</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Detailed Predictions Card -->
+          <mat-card
+            class="predictions-card"
+            *ngIf="analysis()!.prediction?.predictions?.length"
+          >
+            <mat-card-header>
+              <mat-card-title>Detailed Predictions</mat-card-title>
+              <mat-card-subtitle
+                >All detected conditions and their
+                probabilities</mat-card-subtitle
+              >
+            </mat-card-header>
+            <mat-card-content>
+              <div class="predictions-list">
+                <div
+                  class="prediction-item"
+                  *ngFor="
+                    let prediction of analysis()!.prediction?.predictions;
+                    let i = index
+                  "
+                >
+                  <div class="prediction-header">
+                    <span class="condition-name">{{
+                      prediction.condition
+                    }}</span>
+                    <span class="prediction-rank">#{{ i + 1 }}</span>
+                  </div>
+                  <div class="prediction-metrics">
+                    <div class="metric-item">
+                      <span class="metric-label">Confidence</span>
+                      <div class="metric-bar">
+                        <div
+                          class="metric-fill confidence"
+                          [style.width.%]="prediction.confidence * 100"
+                        ></div>
+                        <span class="metric-text"
+                          >{{ (prediction.confidence * 100).toFixed(1) }}%</span
+                        >
+                      </div>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Probability</span>
+                      <div class="metric-bar">
+                        <div
+                          class="metric-fill probability"
+                          [style.width.%]="prediction.probability * 100"
+                        ></div>
+                        <span class="metric-text"
+                          >{{
+                            (prediction.probability * 100).toFixed(1)
+                          }}%</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Recommendations Card -->
+          <mat-card
+            class="recommendations-card"
+            *ngIf="analysis()!.prediction?.recommendations?.length"
+          >
+            <mat-card-header>
+              <mat-card-title>Recommendations</mat-card-title>
+              <mat-card-subtitle
+                >Clinical recommendations based on analysis</mat-card-subtitle
+              >
+            </mat-card-header>
+            <mat-card-content>
+              <mat-list>
+                <mat-list-item
+                  *ngFor="
+                    let recommendation of analysis()!.prediction
+                      ?.recommendations;
+                    let i = index
+                  "
+                >
+                  <mat-icon matListItemIcon>check_circle</mat-icon>
+                  <div matListItemTitle>{{ recommendation }}</div>
+                </mat-list-item>
+              </mat-list>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Technical Details -->
+          <mat-expansion-panel
+            class="technical-panel"
+            *ngIf="analysis()!.prediction?.metadata"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title>Technical Details</mat-panel-title>
+              <mat-panel-description
+                >Model and processing information</mat-panel-description
+              >
+            </mat-expansion-panel-header>
+
+            <div class="technical-content">
+              <div
+                class="tech-item"
+                *ngIf="analysis()!.prediction?.metadata?.model_version"
+              >
+                <span class="tech-label">Model Version:</span>
+                <span class="tech-value">{{
+                  analysis()!.prediction?.metadata?.model_version
+                }}</span>
+              </div>
+              <div
+                class="tech-item"
+                *ngIf="analysis()!.prediction?.metadata?.model_architecture"
+              >
+                <span class="tech-label">Architecture:</span>
+                <span class="tech-value">{{
+                  analysis()!.prediction?.metadata?.model_architecture
+                }}</span>
+              </div>
+              <div
+                class="tech-item"
+                *ngIf="analysis()!.prediction?.metadata?.preprocessing"
+              >
+                <span class="tech-label">Preprocessing:</span>
+                <span class="tech-value">{{
+                  analysis()!.prediction?.metadata?.preprocessing
+                }}</span>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medical Disclaimer -->
+    <div class="disclaimer" *ngIf="analysis() && !isLoading()">
+      <mat-card class="disclaimer-card">
+        <mat-card-content>
+          <div class="disclaimer-content">
+            <mat-icon class="disclaimer-icon">info</mat-icon>
+            <div class="disclaimer-text">
+              <strong>Medical Disclaimer:</strong>
+              This analysis is generated by an AI system and should not replace
+              professional medical diagnosis. Please consult with a qualified
+              ophthalmologist for proper medical evaluation and treatment
+              recommendations.
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</app-dashboard-layout>

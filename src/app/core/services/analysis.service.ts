@@ -40,24 +40,38 @@ export interface AnalysisResult {
   id: string;
   userId: string;
   originalImageUrl: string;
+  retinaImageUrl: string; // Add this as an alias for originalImageUrl
   analyzedImageUrl?: string;
+  fileName?: string; // Add filename property
   status: 'pending' | 'processing' | 'completed' | 'failed';
   patientInfo?: {
     name: string;
     age?: number;
     gender?: string;
     notes?: string;
+    medicalHistory?: string; // Add medical history
   };
   prediction?: {
-    severity: 'mild' | 'moderate' | 'severe';
-    confidence: number;
-    affectedAreas?: Array<{
-      x: number;
-      y: number;
-      radius: number;
-      severity: 'low' | 'medium' | 'high';
+    predictions: Array<{
+      condition: string;
+      confidence: number;
+      probability: number;
     }>;
-    processingTime?: number;
+    primary_diagnosis: string;
+    confidence_score: number;
+    processing_time: number;
+    severity_level: number;
+    severity_name: string;
+    urgency_level: string;
+    recommendations: string[];
+    metadata: {
+      model_version: string;
+      model_architecture: string;
+      preprocessing: string;
+      image_size: number[];
+      file_name?: string;
+      file_size?: number;
+    };
   };
   uploadDate: string;
   analysisDate?: string;

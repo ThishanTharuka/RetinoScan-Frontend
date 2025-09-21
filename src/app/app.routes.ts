@@ -33,6 +33,14 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'analysis/:id',
+    loadComponent: () =>
+      import('./pages/analysis-detail/analysis-detail.component').then(
+        (m) => m.AnalysisDetailComponent,
+      ),
+    canActivate: [AuthGuard],
+  },
+  {
     path: '**',
     redirectTo: '',
   },

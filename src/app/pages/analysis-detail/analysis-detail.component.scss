@@ -1,0 +1,587 @@
+.analysis-detail {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding: 0;
+
+  // Header Section
+  .header {
+    background: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+
+      .back-button {
+        flex-shrink: 0;
+      }
+
+      .header-text {
+        flex: 1;
+
+        h1 {
+          margin: 0;
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #333;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.875rem;
+          color: #666;
+        }
+      }
+
+      .header-actions {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  // Loading State
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1rem;
+
+    p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+  }
+
+  // Error State
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1rem;
+    color: #333;
+    text-align: center;
+    padding: 2rem;
+
+    .error-icon {
+      font-size: 4rem;
+      color: #ff6b6b;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+  }
+
+  // Analysis Content
+  .analysis-content {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 2rem;
+
+      @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+  }
+
+  // Left Column Styles
+  .left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .image-card {
+      .image-container {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f5f5f5;
+
+        .retina-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s ease;
+
+          &:hover {
+            transform: scale(1.05);
+          }
+        }
+      }
+
+      .image-info {
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .info-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.875rem;
+          color: #666;
+
+          mat-icon {
+            font-size: 1.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+        }
+      }
+    }
+
+    .patient-card {
+      mat-list-item {
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+
+  // Right Column Styles
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .status-card {
+      .status-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .status-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 1.1rem;
+          font-weight: 500;
+
+          mat-icon {
+            font-size: 1.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+          }
+        }
+
+        .analysis-id {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem;
+          background: #f8f9fa;
+          border-radius: 6px;
+          font-family: monospace;
+
+          .label {
+            font-weight: 500;
+            color: #666;
+          }
+
+          .value {
+            color: #333;
+          }
+        }
+      }
+    }
+
+    .results-card {
+      .primary-result {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+
+        .diagnosis-section {
+          h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+          }
+
+          .severity-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+          }
+        }
+
+        .confidence-section {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+
+          .confidence-item {
+            .label {
+              font-weight: 500;
+              color: #666;
+              margin-bottom: 0.5rem;
+              display: block;
+            }
+
+            .confidence-bar {
+              position: relative;
+              height: 24px;
+              background: #e0e0e0;
+              border-radius: 12px;
+              overflow: hidden;
+              display: flex;
+              align-items: center;
+
+              .confidence-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #4caf50, #8bc34a);
+                transition: width 1s ease;
+              }
+
+              .confidence-text {
+                position: absolute;
+                right: 8px;
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: #333;
+                z-index: 1;
+              }
+            }
+          }
+
+          .metrics {
+            display: flex;
+            gap: 2rem;
+
+            .metric {
+              display: flex;
+              flex-direction: column;
+              gap: 0.25rem;
+
+              .label {
+                font-size: 0.875rem;
+                color: #666;
+              }
+
+              .value {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #333;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .predictions-card {
+      .predictions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .prediction-item {
+          padding: 1rem;
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          background: #fafafa;
+
+          .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+
+            .condition-name {
+              font-weight: 500;
+              color: #333;
+            }
+
+            .prediction-rank {
+              background: #2196f3;
+              color: white;
+              padding: 0.25rem 0.5rem;
+              border-radius: 12px;
+              font-size: 0.75rem;
+              font-weight: 500;
+            }
+          }
+
+          .prediction-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            .metric-item {
+              display: flex;
+              align-items: center;
+              gap: 1rem;
+
+              .metric-label {
+                width: 80px;
+                font-size: 0.875rem;
+                color: #666;
+                flex-shrink: 0;
+              }
+
+              .metric-bar {
+                position: relative;
+                height: 20px;
+                background: #e0e0e0;
+                border-radius: 10px;
+                overflow: hidden;
+                flex: 1;
+                display: flex;
+                align-items: center;
+
+                .metric-fill {
+                  height: 100%;
+                  transition: width 1s ease;
+
+                  &.confidence {
+                    background: linear-gradient(90deg, #2196f3, #03a9f4);
+                  }
+
+                  &.probability {
+                    background: linear-gradient(90deg, #ff9800, #ffc107);
+                  }
+                }
+
+                .metric-text {
+                  position: absolute;
+                  right: 8px;
+                  font-size: 0.75rem;
+                  font-weight: 500;
+                  color: #333;
+                  z-index: 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .recommendations-card {
+      mat-list-item {
+        mat-icon {
+          color: #4caf50;
+        }
+      }
+    }
+
+    .technical-panel {
+      .technical-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem 0;
+
+        .tech-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid #f0f0f0;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .tech-label {
+            font-weight: 500;
+            color: #666;
+          }
+
+          .tech-value {
+            font-family: monospace;
+            color: #333;
+            background: #f8f9fa;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+  }
+
+  // Disclaimer
+  .disclaimer {
+    margin-top: 2rem;
+    padding: 0 2rem 2rem;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+
+    .disclaimer-card {
+      background: rgba(255, 235, 59, 0.1);
+      border: 1px solid rgba(255, 235, 59, 0.3);
+
+      .disclaimer-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+
+        .disclaimer-icon {
+          color: #ff9800;
+          font-size: 1.5rem;
+          margin-top: 0.125rem;
+          flex-shrink: 0;
+        }
+
+        .disclaimer-text {
+          font-size: 0.875rem;
+          line-height: 1.5;
+          color: #333;
+
+          strong {
+            color: #e65100;
+          }
+        }
+      }
+    }
+  }
+
+  // Status Classes
+  .status-completed {
+    color: #4caf50;
+  }
+
+  .status-processing {
+    color: #ff9800;
+  }
+
+  .status-failed {
+    color: #f44336;
+  }
+
+  .status-pending {
+    color: #2196f3;
+  }
+
+  .status-unknown {
+    color: #9e9e9e;
+  }
+
+  // Severity Classes
+  .severity-normal {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+  }
+
+  .severity-mild {
+    background-color: #fff3e0;
+    color: #ef6c00;
+  }
+
+  .severity-moderate {
+    background-color: #fff8e1;
+    color: #f57c00;
+  }
+
+  .severity-urgent {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+
+  .severity-unknown {
+    background-color: #f5f5f5;
+    color: #757575;
+  }
+
+  // Menu Actions
+  .delete-action {
+    color: #f44336;
+  }
+
+  // Mobile Responsive
+  @media (max-width: 768px) {
+    .header {
+      .header-content {
+        padding: 1rem;
+        gap: 0.5rem;
+
+        .header-text {
+          h1 {
+            font-size: 1.25rem;
+          }
+
+          p {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+
+    .analysis-content {
+      padding: 1rem;
+
+      .content-grid {
+        gap: 1rem;
+      }
+    }
+
+    .left-column {
+      gap: 1rem;
+    }
+
+    .right-column {
+      gap: 1rem;
+
+      .results-card {
+        .primary-result {
+          .confidence-section {
+            .metrics {
+              flex-direction: column;
+              gap: 1rem;
+            }
+          }
+        }
+      }
+
+      .predictions-card {
+        .predictions-list {
+          .prediction-item {
+            .prediction-metrics {
+              .metric-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.25rem;
+
+                .metric-label {
+                  width: auto;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .disclaimer {
+      padding: 0 1rem 1rem;
+    }
+  }
+}
