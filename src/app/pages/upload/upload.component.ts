@@ -201,107 +201,62 @@ export class UploadComponent implements OnInit {
     const patientData = this.getFormData();
     const file = this.selectedFiles()[0];
 
-    const submissionData = {
-      patientId: patientData.patientId,
-      age: patientData.age,
-      gender: patientData.gender,
-      medicalHistory: `Patient Name: ${patientData.patientName}, DOB: ${patientData.dateOfBirth?.toDateString()}`,
-    };
-
     try {
-      // First check if FastAPI is running
-      await new Promise<any>((resolve, reject) => {
-        this.analysisService.checkFastAPIHealth().subscribe({
-          next: (health) => {
-            console.log('FastAPI Health:', health);
-            resolve(health);
-          },
-          error: (err) => {
-            console.error('FastAPI not available:', err);
-            this.snackBar.open(
-              'Model API is not available. Please ensure the model server is running.',
-              'Close',
-              {
+      // Send to Backend (which will handle Model API, Cloudinary, and Database)
+      const result = await new Promise<any>((resolve, reject) => {
+        this.analysisService
+          .uploadForAnalysis(file, {
+            patientId: patientData.patientId,
+            age: patientData.age,
+            gender: patientData.gender,
+            medicalHistory: `Patient Name: ${patientData.patientName}, DOB: ${patientData.dateOfBirth?.toDateString()}`,
+          })
+          .subscribe({
+            next: (analysisResult) => {
+              console.log('Backend Analysis Result:', analysisResult);
+              resolve(analysisResult);
+            },
+            error: (err) => {
+              console.error('Backend analysis error:', err);
+
+              // Show specific error message based on error type
+              let errorMessage = 'Analysis failed';
+
+              if (err.status === 0) {
+                errorMessage =
+                  'Cannot connect to server. Please check your connection.';
+              } else if (err.status === 400) {
+                errorMessage = `Invalid request: ${err.error?.message || 'Bad request'}`;
+              } else if (err.status === 503) {
+                errorMessage =
+                  'Model API is not available. Please try again later.';
+              } else if (err.error?.message) {
+                errorMessage = `Server error: ${err.error.message}`;
+              } else if (err.message) {
+                errorMessage = `Error: ${err.message}`;
+              }
+
+              this.snackBar.open(errorMessage, 'Close', {
                 duration: 5000,
                 panelClass: ['snackbar-error'],
-              },
-            );
-            reject(new Error('FastAPI not available'));
-          },
-        });
+              });
+              reject(new Error(errorMessage));
+            },
+          });
       });
 
-      // Send to FastAPI for prediction
-      const prediction = await new Promise<any>((resolve, reject) => {
-        this.analysisService.uploadToFastAPI(file, submissionData).subscribe({
-          next: (result) => {
-            console.log('FastAPI Prediction Result:', result);
-            resolve(result);
-          },
-          error: (err) => {
-            console.error('FastAPI prediction error:', err);
+      // Extract prediction data from the backend response
+      const prediction = result.prediction;
+      if (!prediction) {
+        throw new Error('No prediction data received');
+      }
 
-            // Show specific error message based on error type
-            let errorMessage = 'Prediction failed';
-
-            if (err.status === 0) {
-              errorMessage =
-                'Cannot connect to model server. Please ensure it is running on port 8001.';
-            } else if (err.status === 400) {
-              errorMessage = `Invalid request: ${err.error?.detail || 'Bad request'}`;
-            } else if (err.status === 503) {
-              errorMessage =
-                'Model is not loaded. Please wait for the server to initialize.';
-            } else if (err.error?.detail) {
-              errorMessage = `Server error: ${err.error.detail}`;
-            } else if (err.message) {
-              errorMessage = `Error: ${err.message}`;
-            }
-
-            this.snackBar.open(errorMessage, 'Close', {
-              duration: 5000,
-              panelClass: ['snackbar-error'],
-            });
-            reject(new Error(errorMessage));
-          },
-        });
-      });
+      const confidence = Math.round((prediction.confidence_score || 0) * 100);
+      const severityLevel = prediction.severity_level || 0;
+      const severityName = prediction.severity_name || 'Unknown';
+      const urgencyLevel = prediction.urgency_level || '✅ NORMAL';
 
       // Show success message with prediction results
-      const primaryDiagnosis = prediction.primary_diagnosis || 'No diagnosis';
-      const confidence = Math.round((prediction.confidence_score || 0) * 100);
-
-      // Map diabetic retinopathy levels to user-friendly names
-      const severityMap: { [key: number]: string } = {
-        0: 'No Diabetic Retinopathy',
-        1: 'Mild Diabetic Retinopathy',
-        2: 'Moderate Diabetic Retinopathy',
-        3: 'Severe Diabetic Retinopathy',
-        4: 'Proliferative Diabetic Retinopathy',
-      };
-
-      // Determine severity level based on predictions with detailed condition names
-      let severityLevel = 0;
-      let maxConfidence = 0;
-
-      // Create a mapping from detailed condition names to severity levels
-      const conditionToSeverity: { [key: string]: number } = {
-        'No Diabetic Retinopathy': 0,
-        'Mild Diabetic Retinopathy': 1,
-        'Moderate Diabetic Retinopathy': 2,
-        'Severe Diabetic Retinopathy': 3,
-        'Proliferative Diabetic Retinopathy': 4,
-      };
-
-      prediction.predictions?.forEach((pred: any) => {
-        if (pred.confidence > maxConfidence) {
-          maxConfidence = pred.confidence;
-          severityLevel = conditionToSeverity[pred.condition] || 0;
-        }
-      });
-
-      const severityName = severityMap[severityLevel] || primaryDiagnosis;
-      const urgencyLevel = this.getUrgencyLevel(severityLevel);
       const snackbarClass = this.getSnackbarClass(severityLevel);
 
       this.snackBar.open(
@@ -313,16 +268,7 @@ export class UploadComponent implements OnInit {
         },
       );
 
-      // Store detailed result for dashboard display
-      const detailedResult = {
-        ...prediction,
-        severity_level: severityLevel,
-        severity_name: severityName,
-        urgency_level: urgencyLevel,
-        recommendations: this.getRecommendations(severityLevel),
-      };
-
-      console.log('Detailed prediction result:', detailedResult);
+      console.log('Complete analysis result:', result);
 
       // Navigate to dashboard after showing results
       setTimeout(() => this.router.navigate(['/dashboard']), 3000);
