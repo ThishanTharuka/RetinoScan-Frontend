@@ -125,6 +125,23 @@ export class AnalysisService {
   }
 
   /**
+   * Request a Grad-CAM heatmap overlay from the model API
+   * Accepts either a File upload or a base64 string; here we'll send the file.
+   */
+  getHeatmap(file: File): Observable<{ status: string; heatmap: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    // We send a dummy patient id/name since the endpoint accepts UploadFile
+    formData.append('patient_id', 'frontend-heatmap');
+    formData.append('patient_name', 'frontend-heatmap');
+
+    return this.http.post<{ status: string; heatmap: string }>(
+      `${this.fastApiUrl}/interpret/gradcam`,
+      formData,
+    );
+  }
+
+  /**
    * Get FastAPI model information
    */
   getFastAPIModelInfo(): Observable<any> {

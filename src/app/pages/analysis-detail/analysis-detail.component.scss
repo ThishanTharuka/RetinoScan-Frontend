@@ -291,6 +291,20 @@
           &:hover {
             transform: scale(1.05);
           }
+          z-index: 1;
+        }
+        /* Heatmap overlay is a sibling of the retina image inside .image-container
+           (so it must be absolutely positioned at the container level). */
+        .heatmap-overlay {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          mix-blend-mode: normal;
+          pointer-events: none; /* clicks pass through to underlying image */
+          opacity: 0.9;
+          z-index: 2;
         }
       }
 
@@ -299,6 +313,12 @@
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+
+        .heatmap-controls {
+          display: flex;
+          gap: 0.75rem;
+          align-items: center;
+        }
 
         .info-item {
           display: flex;

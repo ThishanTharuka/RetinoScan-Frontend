@@ -75,8 +75,40 @@
                     class="retina-image"
                     (error)="onImageError($event)"
                   />
+                  <!-- Heatmap overlay (if available) -->
+                  <img
+                    *ngIf="heatmapB64()"
+                    [src]="heatmapB64()"
+                    alt="Heatmap overlay"
+                    class="heatmap-overlay"
+                  />
                 </div>
                 <div class="image-info">
+                  <div class="heatmap-controls">
+                    <button
+                      mat-stroked-button
+                      color="primary"
+                      (click)="fetchHeatmap()"
+                      [disabled]="isHeatmapLoading()"
+                    >
+                      <mat-icon *ngIf="!isHeatmapLoading()"
+                        >visibility</mat-icon
+                      >
+                      <mat-spinner
+                        *ngIf="isHeatmapLoading()"
+                        diameter="18"
+                      ></mat-spinner>
+                      <span *ngIf="!isHeatmapLoading()">Generate Heatmap</span>
+                    </button>
+
+                    <button
+                      *ngIf="heatmapB64()"
+                      mat-button
+                      (click)="heatmapB64.set(null)"
+                    >
+                      Clear Heatmap
+                    </button>
+                  </div>
                   <div class="info-item">
                     <mat-icon>calendar_today</mat-icon>
                     <span>{{ formatDate(analysis()!.uploadDate) }}</span>

@@ -2,6 +2,7 @@ import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 
 // Angular Material
 import { MatButtonModule } from '@angular/material/button';
@@ -53,6 +54,10 @@ export class AnalysisDetailComponent implements OnInit, OnDestroy {
   analysis = signal<AnalysisResult | null>(null);
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
+  // Heatmap state
+  heatmapB64 = signal<string | null>(null);
+  isHeatmapLoading = signal<boolean>(false);
+  heatmapError = signal<string | null>(null);
   analysisId = '';
 
   ngOnInit() {
@@ -88,6 +93,9 @@ export class AnalysisDetailComponent implements OnInit, OnDestroy {
               analysis.prediction?.metadata?.file_name || 'retina-scan.jpg',
           };
           this.analysis.set(enhancedAnalysis);
+          // reset heatmap state when a new analysis is loaded
+          this.heatmapB64.set(null);
+          this.heatmapError.set(null);
           this.isLoading.set(false);
         },
         error: (err: any) => {
@@ -100,6 +108,51 @@ export class AnalysisDetailComponent implements OnInit, OnDestroy {
           });
         },
       });
+  }
+
+  fetchHeatmap() {
+    const analysis = this.analysis();
+    if (!analysis) return;
+
+    // If server already provided an analyzedImageUrl we could use that file,
+    // but we'll fetch heatmap by re-uploading the original URL via fetch -> blob -> File
+    this.isHeatmapLoading.set(true);
+    this.heatmapError.set(null);
+
+    fetch(analysis.originalImageUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const file = new File([blob], analysis.fileName || 'retina.png', {
+          type: blob.type,
+        });
+        return lastValueFrom(this.analysisService.getHeatmap(file));
+      })
+      .then((resp: any) => {
+        if (resp?.heatmap) {
+          this.heatmapB64.set(resp.heatmap);
+          // also store as analyzedImageUrl on the analysis so other UI can reference it
+          const curr = this.analysis();
+          if (curr)
+            this.analysis.set({ ...curr, analyzedImageUrl: resp.heatmap });
+          this.snackBar.open('Heatmap generated', 'Close', {
+            duration: 2000,
+            panelClass: ['snackbar-success'],
+          });
+        } else {
+          this.heatmapError.set('No heatmap returned');
+        }
+        this.isHeatmapLoading.set(false);
+      })
+      .catch((err) => {
+        console.error('Heatmap error', err);
+        this.heatmapError.set('Failed to generate heatmap');
+        this.isHeatmapLoading.set(false);
+      });
+  }
+
+  fetchLatestHeatmap() {
+    // removed: no longer supported (Show Latest Heatmap UI was removed)
+    console.warn('fetchLatestHeatmap called but removed');
   }
 
   goBack() {
