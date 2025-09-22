@@ -114,6 +114,8 @@ export class Dashboard implements OnInit, OnDestroy {
   getSeverityClass(severityLevel?: number): string {
     if (severityLevel === undefined || severityLevel === null)
       return 'severity-unknown';
+    // Distinguish level 4 as proliferative (more severe than 'urgent')
+    if (severityLevel === 4) return 'severity-proliferative';
     if (severityLevel >= 3) return 'severity-urgent';
     if (severityLevel >= 2) return 'severity-moderate';
     if (severityLevel >= 1) return 'severity-mild';
@@ -290,7 +292,7 @@ export class Dashboard implements OnInit, OnDestroy {
       case 3:
         return 'Severe';
       case 4:
-        return 'Severe';
+        return 'Proliferative';
       default:
         return 'Unknown';
     }

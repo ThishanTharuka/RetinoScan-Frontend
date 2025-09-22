@@ -165,6 +165,11 @@
   border-left: 4px solid #dc3545;
 }
 
+/* Proliferative severity: darker red to emphasize higher urgency */
+.severity-proliferative {
+  border-left: 4px solid #9b111e; /* darker red */
+}
+
 .severity-unknown {
   border-left: 4px solid #6c757d;
 }
@@ -228,6 +233,11 @@
         &.severity-urgent {
           background: #f8d7da;
           color: #721c24;
+        }
+
+        &.severity-proliferative {
+          background: #f2b8bd; /* slightly deeper pink-red background */
+          color: #6f0f14; /* darker red text */
         }
       }
 

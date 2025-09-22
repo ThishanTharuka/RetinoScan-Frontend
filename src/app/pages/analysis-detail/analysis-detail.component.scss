@@ -227,6 +227,28 @@
       margin-right: 0.5rem !important;
     }
 
+    /* Proliferative severity styling (darker red) */
+    .severity-chip.severity-normal {
+      background: #d4edda !important;
+      color: #155724 !important;
+    }
+    .severity-chip.severity-mild {
+      background: #fff3cd !important;
+      color: #856404 !important;
+    }
+    .severity-chip.severity-moderate {
+      background: #ffeaa7 !important;
+      color: #b8610a !important;
+    }
+    .severity-chip.severity-urgent {
+      background: #f8d7da !important;
+      color: #721c24 !important;
+    }
+    .severity-chip.severity-proliferative {
+      background: #f2b8bd !important;
+      color: #6f0f14 !important;
+    }
+
     /* Ensure the inner content of the Material chip aligns items and doesn't compress */
     .mat-mdc-chip .mat-mdc-chip-content,
     mat-chip .mat-mdc-chip-content {
