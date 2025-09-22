@@ -3,7 +3,7 @@
   <div class="dashboard-content">
     <!-- Header Section -->
     <div class="page-header">
-      <h1>Analysis History</h1>
+      <h1>Dashboard</h1>
       <p class="page-subtitle">
         Review past retinal scans and analysis results.
       </p>
@@ -94,7 +94,8 @@
         <div class="table-header">
           <div class="header-cell date-column">Date/Time</div>
           <div class="header-cell severity-column">Severity</div>
-          <div class="header-cell image-column">Retina Image</div>
+          <div class="header-cell confidence-column">Confidence</div>
+          <div class="header-cell image-column">Image</div>
           <div class="header-cell actions-column">Actions</div>
         </div>
 
@@ -144,13 +145,19 @@
                   >
                   {{ analysis.status | titlecase }}
                 </mat-chip>
+              </div>
+            </div>
 
-                <div
-                  *ngIf="analysis.status === 'completed' && analysis.prediction"
-                  class="confidence-info"
-                >
-                  {{ getConfidencePercentage(analysis) }}% confidence
+            <!-- Confidence Column -->
+            <div class="table-cell confidence-column">
+              <div
+                class="confidence-info"
+                *ngIf="analysis.status === 'completed' && analysis.prediction"
+              >
+                <div class="confidence-value">
+                  {{ getConfidencePercentage(analysis) }}%
                 </div>
+                <div class="confidence-label">confidence</div>
               </div>
             </div>
 
@@ -175,7 +182,11 @@
 
             <!-- Actions Column -->
             <div class="table-cell actions-column">
-              <div class="action-buttons" (click)="$event.stopPropagation()">
+              <div
+                class="action-buttons"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+              >
                 <button
                   mat-stroked-button
                   color="primary"

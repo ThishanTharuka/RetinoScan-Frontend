@@ -1,5 +1,15 @@
 <app-dashboard-layout>
   <div class="upload-container">
+    <!-- Full-page overlay with top progress bar when uploading -->
+    <div class="upload-overlay" *ngIf="isUploading()">
+      <div class="overlay-backdrop"></div>
+      <div class="top-progress">
+        <mat-progress-bar
+          mode="indeterminate"
+          color="primary"
+        ></mat-progress-bar>
+      </div>
+    </div>
     <div class="upload-header">
       <h1>Patient Analysis Upload</h1>
       <p>
@@ -188,11 +198,7 @@
           </mat-card-actions>
         </mat-card>
 
-        <!-- Progress Indicator moved inside main column so it scrolls with the form -->
-        <mat-card class="progress-card" *ngIf="isUploading()">
-          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-          <p>Processing your analysis request...</p>
-        </mat-card>
+        <!-- progress-card removed: replaced by overlay with top progress bar -->
       </div>
 
       <!-- Right sidebar help column -->

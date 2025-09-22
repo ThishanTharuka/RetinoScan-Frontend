@@ -3,39 +3,64 @@
   background: #f8f9fa;
   padding: 0;
 
-  // Header Section
+  /* When this component is used with the dashboard-content wrapper
+     (class added to the root element), apply the same outer padding
+     used on the dashboard so header and content align centrally. */
+  &.dashboard-content {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  /* Remove default gray/card surface from Angular Material cards on this page
+     We scope this to the analysis-detail component so other pages remain unchanged. */
+  mat-card,
+  .mat-mdc-card {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .mat-mdc-card-header {
+    padding: 16px 16px 16px 0; /* remove right padding so header aligns with content */
+  }
+  .mat-mdc-card-content {
+    padding: 0; /* remove default padding so content aligns with header */
+  }
+  // Header Section: make header visually part of the dashboard-content
   .header {
-    background: white;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    background: transparent;
+    border-bottom: none;
+    position: static;
 
     .header-content {
       display: flex;
       align-items: center;
       gap: 1rem;
-      padding: 1rem 2rem;
-      max-width: 1400px;
-      margin: 0 auto;
+      padding: 0; /* rely on dashboard-content padding */
+      /* allow the header to span the full available width inside main-content
+           so the analysis page uses the same full-width behavior as the dashboard */
+      width: 100%;
+      max-width: none;
+      margin: 0;
 
       .back-button {
         flex-shrink: 0;
       }
 
-      .header-text {
+      .page-header {
         flex: 1;
 
         h1 {
-          margin: 0;
-          font-size: 1.5rem;
+          margin: 0 0 0.5rem 0;
+          font-size: 2rem;
           font-weight: 600;
-          color: #333;
+          color: #1a1a1a;
         }
 
-        p {
+        .page-subtitle {
           margin: 0;
-          font-size: 0.875rem;
+          font-size: 1rem;
           color: #666;
         }
       }
@@ -92,9 +117,11 @@
 
   // Analysis Content
   .analysis-content {
-    padding: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
+    padding: 1rem 0rem;
+    /* allow content to stretch to available width; inner grid will control
+       column sizes (left column fixed, right column fluid) */
+    width: 100%;
+    max-width: none;
 
     .content-grid {
       display: grid;
@@ -108,6 +135,138 @@
     }
   }
 
+  // Upper section look: merge top cards visually
+  .upper-section {
+    width: 100%;
+    display: block;
+    margin-bottom: 1.5rem;
+
+    .upper-section-inner {
+      background: white;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .image-card,
+    .status-card,
+    .results-card {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0; /* remove extra card padding so content aligns */
+
+      mat-card-header {
+        padding: 0 0 0.75rem 0;
+      }
+
+      mat-card-content {
+        padding: 0;
+      }
+    }
+
+    /* Remove rounded card visuals for image card so image sits flush */
+    .image-card {
+      .image-container {
+        border-radius: 8px; /* keep image rounded */
+        overflow: hidden;
+        background: #f5f5f5;
+      }
+      /* If any mat-card header/title remained from earlier versions, hide it here */
+      mat-card-header,
+      mat-card-title {
+        display: none !important;
+      }
+    }
+
+    /* Make status and results appear on a light background without card chrome */
+    .status-card,
+    .results-card {
+      padding: 0; /* content already padded by outer container */
+    }
+
+    /* make severity chip more visible and match dashboard look */
+    .severity-info {
+      margin-top: 0.5rem;
+
+      mat-chip {
+        font-weight: 600;
+        border-radius: 999px;
+        text-transform: none !important;
+      }
+
+      /* unset global chip width variable so this chip can size to content */
+      mat-chip,
+      .severity-chip {
+        --chip-width: auto !important;
+      }
+    }
+
+    /* prevent global fixed-width chip rules from shrinking text here */
+    .severity-chip {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      padding: 0.35rem 0.9rem !important;
+      min-width: auto !important;
+      width: auto !important;
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-transform: none !important;
+    }
+
+    .severity-chip mat-icon {
+      font-size: 1rem !important;
+      width: 1rem !important;
+      height: 1rem !important;
+      line-height: 1 !important;
+      margin-right: 0.5rem !important;
+    }
+
+    /* Ensure the inner content of the Material chip aligns items and doesn't compress */
+    .mat-mdc-chip .mat-mdc-chip-content,
+    mat-chip .mat-mdc-chip-content {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 0.45rem !important;
+    }
+
+    /* additional guard against global fixed width applied elsewhere */
+    :host ::ng-deep .mat-mdc-chip.severity-chip,
+    :host ::ng-deep mat-chip.severity-chip {
+      width: auto !important;
+      min-width: 0 !important;
+      padding-left: 0.6rem !important;
+      padding-right: 0.9rem !important;
+      white-space: nowrap !important;
+      overflow: visible !important;
+      text-transform: none !important;
+    }
+
+    /* icon spacing handled above */
+
+    .confidence-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+
+      .label {
+        font-weight: 600;
+        color: #666;
+      }
+
+      .confidence-value {
+        font-weight: 700;
+        color: #12a86a;
+        font-size: 1rem;
+      }
+    }
+  }
+
   // Left Column Styles
   .left-column {
     display: flex;
@@ -117,7 +276,7 @@
     .image-card {
       .image-container {
         position: relative;
-        width: 100%;
+        width: 85%;
         aspect-ratio: 1;
         border-radius: 8px;
         overflow: hidden;
@@ -189,25 +348,6 @@
             height: 1.5rem;
           }
         }
-
-        .analysis-id {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0.75rem;
-          background: #f8f9fa;
-          border-radius: 6px;
-          font-family: monospace;
-
-          .label {
-            font-weight: 500;
-            color: #666;
-          }
-
-          .value {
-            color: #333;
-          }
-        }
       }
     }
 
@@ -247,26 +387,28 @@
 
             .confidence-bar {
               position: relative;
-              height: 24px;
-              background: #e0e0e0;
-              border-radius: 12px;
+              height: 12px;
+              background: #e9ecef;
+              border-radius: 999px; /* pill */
               overflow: hidden;
-              display: flex;
-              align-items: center;
 
               .confidence-fill {
                 height: 100%;
-                background: linear-gradient(90deg, #4caf50, #8bc34a);
-                transition: width 1s ease;
+                background: linear-gradient(90deg, #0fbf8b, #12a86a);
+                transition: width 0.8s ease;
+                border-radius: 999px;
               }
 
               .confidence-text {
                 position: absolute;
-                right: 8px;
-                font-size: 0.875rem;
-                font-weight: 500;
-                color: #333;
-                z-index: 1;
+                right: 8px; /* place percentage inside the pill on the right */
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 0.95rem;
+                font-weight: 600;
+                color: #fff; /* white for contrast on filled area */
+                z-index: 2;
+                text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
               }
             }
           }
@@ -314,9 +456,24 @@
             align-items: center;
             margin-bottom: 0.75rem;
 
+            .condition-title-row {
+              display: flex;
+              gap: 0.75rem;
+              align-items: baseline;
+            }
+
             .condition-name {
               font-weight: 500;
               color: #333;
+            }
+
+            .condition-confidence {
+              font-size: 0.85rem;
+              color: #666;
+              background: rgba(0, 0, 0, 0.04);
+              padding: 0.125rem 0.5rem;
+              border-radius: 8px;
+              font-weight: 600;
             }
 
             .prediction-rank {
@@ -340,42 +497,54 @@
               gap: 1rem;
 
               .metric-label {
-                width: 80px;
+                width: 90px;
                 font-size: 0.875rem;
                 color: #666;
                 flex-shrink: 0;
               }
 
-              .metric-bar {
+              /* pill style bar to match the primary confidence bar */
+              .metric-bar.pill {
                 position: relative;
-                height: 20px;
-                background: #e0e0e0;
-                border-radius: 10px;
+                height: 12px;
+                background: #f0f0f0;
+                border-radius: 999px;
                 overflow: hidden;
                 flex: 1;
-                display: flex;
-                align-items: center;
+                display: block;
 
                 .metric-fill {
                   height: 100%;
                   transition: width 1s ease;
+                  border-radius: 999px;
 
                   &.confidence {
-                    background: linear-gradient(90deg, #2196f3, #03a9f4);
+                    background: linear-gradient(90deg, #4caf50, #66bb6a);
                   }
 
                   &.probability {
-                    background: linear-gradient(90deg, #ff9800, #ffc107);
+                    background: linear-gradient(90deg, #2196f3, #03a9f4);
                   }
                 }
 
                 .metric-text {
                   position: absolute;
                   right: 8px;
+                  top: 50%;
+                  transform: translateY(-50%);
                   font-size: 0.75rem;
-                  font-weight: 500;
-                  color: #333;
-                  z-index: 1;
+                  font-weight: 600;
+                  color: #000000; /* prefer white for contrast when fill is present */
+                  z-index: 2;
+                  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+
+                  /* If the fill width is very small, fallback to a darker color for readability */
+                  &.low-fill {
+                    color: #222 !important;
+                    /* move the text outside the pill for very small fills */
+                    right: -2.5rem !important;
+                    text-shadow: none !important;
+                  }
                 }
               }
             }
@@ -523,12 +692,12 @@
         padding: 1rem;
         gap: 0.5rem;
 
-        .header-text {
+        .page-header {
           h1 {
             font-size: 1.25rem;
           }
 
-          p {
+          .page-subtitle {
             font-size: 0.8rem;
           }
         }

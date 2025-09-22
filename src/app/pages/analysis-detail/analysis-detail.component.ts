@@ -168,6 +168,14 @@ export class AnalysisDetailComponent implements OnInit, OnDestroy {
     return Math.round((analysis.prediction?.confidence_score || 0) * 100);
   }
 
+  // Helper: determine if two metric values are effectively equal (within 0.5%)
+  metricsAreEqual(a?: number, b?: number): boolean {
+    if (a === undefined || b === undefined) return false;
+    const pa = Math.round((a || 0) * 1000) / 10; // one decimal as percent
+    const pb = Math.round((b || 0) * 1000) / 10;
+    return Math.abs(pa - pb) <= 0.5; // within half a percent
+  }
+
   getUrgencyColor(urgencyLevel: string): string {
     if (urgencyLevel.includes('URGENT')) return 'warn';
     if (urgencyLevel.includes('MODERATE')) return 'accent';

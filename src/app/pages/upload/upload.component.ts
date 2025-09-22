@@ -270,8 +270,24 @@ export class UploadComponent implements OnInit {
 
       console.log('Complete analysis result:', result);
 
-      // Navigate to dashboard after showing results
-      setTimeout(() => this.router.navigate(['/dashboard']), 3000);
+      // Navigate to the newly created analysis detail page after showing results
+      // Use the result.id from the backend AnalysisResult to open the analysis page
+      const analysisId = result?.id || result?.analysis?.id;
+      if (analysisId) {
+        // Keep the uploading overlay until navigation completes
+        try {
+          await this.router.navigate(['/analysis', analysisId]);
+        } catch (navErr) {
+          console.error('Navigation to analysis detail failed:', navErr);
+        }
+      } else {
+        // Fallback to dashboard if no id is present
+        try {
+          await this.router.navigate(['/dashboard']);
+        } catch (navErr) {
+          console.error('Navigation to dashboard failed:', navErr);
+        }
+      }
     } catch (error: any) {
       console.error('Analysis submission error:', error);
       // Error messages already shown in individual catch blocks

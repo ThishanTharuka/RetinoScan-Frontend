@@ -38,12 +38,7 @@ export class SidenavService implements OnDestroy {
       icon: 'upload_2',
       route: '/upload',
     },
-    {
-      id: 'history',
-      label: 'History',
-      icon: 'history',
-      route: '/history',
-    },
+    // 'History' removed — navigation simplified
     {
       id: 'help',
       label: 'Help',
