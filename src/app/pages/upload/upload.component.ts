@@ -96,6 +96,7 @@ export class UploadComponent implements OnInit {
       age: [{ value: '', disabled: true }],
       gender: ['', Validators.required],
       image: [null, Validators.required],
+      actualStage: [''],
     });
   }
 
@@ -205,12 +206,21 @@ export class UploadComponent implements OnInit {
       // Send to Backend (which will handle Model API, Cloudinary, and Database)
       const result = await new Promise<any>((resolve, reject) => {
         this.analysisService
-          .uploadForAnalysis(file, {
-            patientId: patientData.patientId,
-            age: patientData.age,
-            gender: patientData.gender,
-            medicalHistory: `Patient Name: ${patientData.patientName}, DOB: ${patientData.dateOfBirth?.toDateString()}`,
-          })
+          .uploadForAnalysis(
+            file,
+            {
+              // include both patientId and patientName so backend receives them explicitly
+              patientId: patientData.patientId,
+              patientName: patientData.patientName,
+              age: patientData.age,
+              gender: patientData.gender,
+              medicalHistory: `DOB: ${patientData.dateOfBirth?.toDateString()}`,
+            },
+            // second arg is optional extras (e.g. actualStage)
+            {
+              actualStage: this.uploadForm.get('actualStage')?.value || '',
+            },
+          )
           .subscribe({
             next: (analysisResult) => {
               console.log('Backend Analysis Result:', analysisResult);

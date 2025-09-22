@@ -7,6 +7,8 @@ import { AuthService } from './auth.service';
 
 export interface PatientInfo {
   patientId: string;
+  // Optional patient name supplied by the frontend upload form
+  patientName?: string;
   age: number;
   gender: string;
   medicalHistory?: string;
@@ -51,6 +53,8 @@ export interface AnalysisResult {
     notes?: string;
     medicalHistory?: string; // Add medical history
   };
+  // Clinician-provided ground truth stage (optional)
+  actualStage?: string;
   prediction?: {
     predictions: Array<{
       condition: string;
@@ -161,10 +165,17 @@ export class AnalysisService {
   uploadForAnalysis(
     file: File,
     patientInfo: PatientInfo,
+    extras?: { actualStage?: string },
   ): Observable<AnalysisResult> {
     const formData = new FormData();
     formData.append('image', file);
-    formData.append('patientName', patientInfo.patientId); // Using patientId as name for now
+    // Send both patientId and patientName explicitly
+    if ((patientInfo as any).patientId) {
+      formData.append('patientId', (patientInfo as any).patientId);
+    }
+    if ((patientInfo as any).patientName) {
+      formData.append('patientName', (patientInfo as any).patientName);
+    }
 
     // Ensure age is a valid number
     const age = Number(patientInfo.age);
@@ -176,6 +187,11 @@ export class AnalysisService {
 
     if (patientInfo.medicalHistory) {
       formData.append('patientNotes', patientInfo.medicalHistory);
+    }
+
+    // Append clinician-provided ground truth stage if present
+    if (extras?.actualStage) {
+      formData.append('actualStage', extras.actualStage);
     }
 
     return this.getAuthHeaders().pipe(

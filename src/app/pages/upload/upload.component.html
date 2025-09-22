@@ -69,6 +69,35 @@
                   </mat-form-field>
                 </div>
 
+                <!-- Ground-truth DR Stage (optional) -->
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Actual DR Stage (optional)</mat-label>
+                    <mat-select formControlName="actualStage">
+                      <mat-option value="">(None)</mat-option>
+                      <mat-option value="No Diabetic Retinopathy"
+                        >Normal</mat-option
+                      >
+                      <mat-option value="Mild Diabetic Retinopathy"
+                        >Mild</mat-option
+                      >
+                      <mat-option value="Moderate Diabetic Retinopathy"
+                        >Moderate</mat-option
+                      >
+                      <mat-option value="Severe Diabetic Retinopathy"
+                        >Severe</mat-option
+                      >
+                      <mat-option value="Proliferative Diabetic Retinopathy"
+                        >Proliferative</mat-option
+                      >
+                    </mat-select>
+                    <mat-hint
+                      >If you know the clinical diagnosis, select it here so we
+                      can build labeled data.</mat-hint
+                    >
+                  </mat-form-field>
+                </div>
+
                 <div class="form-row">
                   <mat-form-field appearance="outline">
                     <mat-label>Date of Birth</mat-label>

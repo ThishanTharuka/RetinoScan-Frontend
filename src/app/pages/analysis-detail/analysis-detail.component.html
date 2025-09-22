@@ -136,7 +136,7 @@
                     <div matListItemTitle>
                       {{ analysis()!.patientInfo?.name || "Unknown" }}
                     </div>
-                    <div matListItemLine>Patient ID</div>
+                    <div matListItemLine>Patient Name</div>
                   </mat-list-item>
                   <mat-list-item>
                     <mat-icon matListItemIcon>cake</mat-icon>
@@ -163,6 +163,15 @@
                       {{ analysis()!.patientInfo?.medicalHistory }}
                     </div>
                     <div matListItemLine>Medical History</div>
+                  </mat-list-item>
+
+                  <mat-divider *ngIf="analysis()!.actualStage"></mat-divider>
+                  <mat-list-item *ngIf="analysis()!.actualStage">
+                    <mat-icon matListItemIcon>label</mat-icon>
+                    <div matListItemTitle>
+                      {{ analysis()!.actualStage }}
+                    </div>
+                    <div matListItemLine>Actual DR Stage (clinician)</div>
                   </mat-list-item>
                 </mat-list>
               </mat-card-content>
